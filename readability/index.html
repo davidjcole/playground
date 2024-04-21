@@ -50,7 +50,6 @@ function countSyllables(word) {
 }
 
 function calculateGunningFog(text) {
-    // Improved regex for capturing sentences more accurately
     const sentences = text.match(/[^\.!\?]+[\.!\?]+["'\)\]]*|.+$/g) || [];
     const words = text.match(/\w+/g) || [];
     let complexWords = 0;
@@ -75,21 +74,22 @@ function displayGunningFog() {
     let description = "";
     let educationLevel = "";
 
+    const grades = [
+        "Sixth grade (age 11-12)", "Seventh grade (age 12-13)", "Eighth grade (age 13-14)", 
+        "High school freshman (age 14-15)", "High school sophomore (age 15-16)", 
+        "High school junior (age 16-17)", "High school senior (age 17-18)", 
+        "College freshman (age 18-19)", "College sophomore (age 19-20)", 
+        "College junior (age 20-21)", "College senior (age 21-22)", "College graduate (age 22+)"
+    ];
+
     if (index < 6) {
         description = "Text is very easy to read.";
-        educationLevel = "Below sixth grade";
+        educationLevel = "Below sixth grade (age < 11)";
     } else if (index >= 17) {
         description = "Text is very difficult to read and best understood by university graduates.";
-        educationLevel = "College graduate";
+        educationLevel = grades[11];
     } else {
         description = "Text requires a certain level of education to understand.";
-        const grades = [
-            "Sixth grade", "Seventh grade", "Eighth grade", 
-            "High school freshman", "High school sophomore", 
-            "High school junior", "High school senior", 
-            "College freshman", "College sophomore", 
-            "College junior", "College senior"
-        ];
         educationLevel = grades[Math.floor(index) - 6];
     }
 
