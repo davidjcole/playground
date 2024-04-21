@@ -20,7 +20,7 @@
         padding: 10px;
         border: 1px solid #ccc;
         border-radius: 5px;
-        box-sizing: border-box; /* ensures padding doesn't affect width */
+        box-sizing: border-box;
         margin-bottom: 10px;
     }
     button {
@@ -41,13 +41,28 @@
     }
 </style>
 <script>
+function countSyllables(word) {
+    word = word.toLowerCase();
+    if(word.length <= 3) { return 1; }
+    word = word.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/, '');
+    word = word.replace(/^y/, '');
+    return (word.match(/[aeiouy]{1,2}/g) || []).length;
+}
+
 function calculateGunningFog(text) {
-    const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [];
+    // Improved regex for capturing sentences more accurately
+    const sentences = text.match(/[^\.!\?]+[\.!\?]+["'\)\]]*|.+$/g) || [];
     const words = text.match(/\w+/g) || [];
-    const complexWords = text.match(/\b\w{7,}\b/g) || [];
+    let complexWords = 0;
+
+    words.forEach(word => {
+        if (countSyllables(word) >= 3) {
+            complexWords++;
+        }
+    });
 
     const averageSentenceLength = words.length / sentences.length;
-    const percentageOfComplexWords = (complexWords.length / words.length) * 100;
+    const percentageOfComplexWords = (complexWords / words.length) * 100;
 
     const gunningFog = 0.4 * (averageSentenceLength + percentageOfComplexWords);
     return gunningFog.toFixed(2);
