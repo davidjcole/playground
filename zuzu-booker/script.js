@@ -39,9 +39,9 @@ function calculateDays() {
     }
 
     const start = startDate.getTime();
-    const end = new Date(endDate.getTime() + (24 * 60 * 60 * 1000)); // Adjust end date to the day after
+    const end = endDate.getTime() + (24 * 60 * 60 * 1000); // Adjust end date to include the entire end day
     const timeDiff = end - start;
-    const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24)) + 1; // Add 1 to include both start and end dates
+    const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24)); // Use Math.ceil to round up to include the end day
 
     const outputDiv = document.getElementById('output');
     let holidaysCount = 0;
@@ -54,7 +54,7 @@ function calculateDays() {
         let message = `Total Days: ${daysDiff} <br> Start Date: ${formatDate(startDate)} <br> End Date: ${formatDate(endDate)} <br>`;
         
         // Check if any dates in the range are public holidays
-        for (let i = start; i <= end; i += 86400000) {
+        for (let i = start; i < end; i += 86400000) {
             const currentDate = new Date(i);
             const currentDateStr = currentDate.toISOString().slice(0, 10);
 
@@ -76,7 +76,7 @@ function calculateDays() {
             message += `Total public holidays in the selected date range: ${holidaysCount}`;
         }
 
-        message += `<br><br><b>Breakdown of cost:</b> <br> - Regular days (${regularDaysCount} days) at £${REGULAR_DAY_COST} per day <br> - Public holidays (${holidaysCount} days) at £${PUBLIC_HOLIDAY_DAY_COST} per day <br> <b>Total Cost: £${totalCost}</b><br><br>`;
+        message += `<br><br><b>Breakdown of cost:</b> <br> - Regular days (${regularDaysCount} days) at £${REGULAR_DAY_COST} per day <br> - Public holidays (${holidaysCount} days) at £${PUBLIC_HOLIDAY_DAY_COST} per day <br> <b>Total Cost: £${totalCost}</b>`;
 
         outputDiv.innerHTML = message;
 
@@ -88,6 +88,7 @@ function calculateDays() {
             window.location.href = mailtoLink;
         };
         outputDiv.appendChild(document.createElement('br')); // Add a line break
+        outputDiv.appendChild(document.createElement('br')); // Add another line break for spacing
         outputDiv.appendChild(bookNowButton);
 
         // Add paragraph break
