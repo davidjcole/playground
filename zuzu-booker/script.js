@@ -76,7 +76,7 @@ function calculateDays() {
             message += `Total public holidays in the selected date range: ${holidaysCount}`;
         }
 
-        message += `<br> Breakdown of cost: <br> - Regular days (${regularDaysCount} days) at £${REGULAR_DAY_COST} per day <br> - Public holidays (${holidaysCount} days) at £${PUBLIC_HOLIDAY_DAY_COST} per day <br> Total Cost: £${totalCost}`;
+        message += `<br><br><b>Breakdown of cost:</b> <br> - Regular days (${regularDaysCount} days) at £${REGULAR_DAY_COST} per day <br> - Public holidays (${holidaysCount} days) at £${PUBLIC_HOLIDAY_DAY_COST} per day <br> <b>Total Cost: £${totalCost}</b>`;
 
         outputDiv.innerHTML = message;
 
