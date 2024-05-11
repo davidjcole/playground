@@ -31,7 +31,7 @@
         // Function to fetch weather data
         async function fetchWeather() {
             const apiKey = 'dfe297f009fd4e35b8294540241105'; // Replace 'YOUR_API_KEY' with your actual API key from WeatherAPI.com
-            const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=London&aqi=no`;
+            const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=London&aqi=no`;
 
             try {
                 const response = await fetch(url);
