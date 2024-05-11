@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather in London</title>
+</head>
+<body>
+    <h1>Weather in London, UK</h1>
+    <div id="weather">
+        <p>Loading weather...</p>
+    </div>
+
+    <script>
+        // Function to fetch weather data
+        async function fetchWeather() {
+            const apiKey = '<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather in London</title>
+</head>
+<body>
+    <h1>Weather in London, UK</h1>
+    <div id="weather">
+        <p>Loading weather...</p>
+    </div>
+
+    <script>
+        // Function to fetch weather data
+        async function fetchWeather() {
+            const apiKey = 'dfe297f009fd4e35b8294540241105'; // Replace 'YOUR_API_KEY' with your actual API key from WeatherAPI.com
+            const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=London&aqi=no`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                // Display weather information
+                const weatherElement = document.getElementById('weather');
+                weatherElement.innerHTML = `
+                    <p><strong>Temperature:</strong> ${data.current.temp_c}°C</p>
+                    <p><strong>Condition:</strong> ${data.current.condition.text}</p>
+                    <p><strong>Wind:</strong> ${data.current.wind_kph} kph, ${data.current.wind_dir}</p>
+                    <p><strong>Humidity:</strong> ${data.current.humidity}%</p>
+                `;
+            } catch (error) {
+                console.error('Failed to fetch weather data:', error);
+            }
+        }
+
+        // Fetch weather when the page loads
+        document.addEventListener('DOMContentLoaded', fetchWeather);
+    </script>
+</body>
+</html>
+'; // Replace 'YOUR_API_KEY' with your actual API key from WeatherAPI.com
+            const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=London&aqi=no`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                // Display weather information
+                const weatherElement = document.getElementById('weather');
+                weatherElement.innerHTML = `
+                    <p><strong>Temperature:</strong> ${data.current.temp_c}°C</p>
+                    <p><strong>Condition:</strong> ${data.current.condition.text}</p>
+                    <p><strong>Wind:</strong> ${data.current.wind_kph} kph, ${data.current.wind_dir}</p>
+                    <p><strong>Humidity:</strong> ${data.current.humidity}%</p>
+                `;
+            } catch (error) {
+                console.error('Failed to fetch weather data:', error);
+            }
+        }
+
+        // Fetch weather when the page loads
+        document.addEventListener('DOMContentLoaded', fetchWeather);
+    </script>
+</body>
+</html>
