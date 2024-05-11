@@ -4,78 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Weather Lookup</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <h1>Check the Weather</h1>
     <div>
         <input type="text" id="locationInput" placeholder="Enter location (e.g., London, UK)">
-        <button onclick="fetchWeather()">Get Weather</button>
+        <button>Get Weather</button>
     </div>
     <div id="weather">
         <p>Please enter a location and click "Get Weather" to display weather information.</p>
     </div>
-    <div id="clothingAdvice">
-        <p>Clothing advice will appear here after fetching the weather.</p>
-    </div>
 
-    <script>
-        // Function to fetch weather data and get clothing advice
-        async function fetchWeather() {
-            const apiKey = 'dfe297f009fd4e35b8294540241105'; // Replace with your actual Weather API key
-            const location = document.getElementById('locationInput').value;
-            const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${encodeURIComponent(location)}&aqi=no`;
-
-            try {
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                displayWeather(data);
-                getClothingAdvice(data.current);
-            } catch (error) {
-                console.error('Failed to fetch weather data:', error);
-                document.getElementById('weather').innerHTML = `<p>Error fetching weather data. Please check console for details.</p>`;
-            }
-        }
-
-        // Display weather information
-        function displayWeather(data) {
-            const weatherElement = document.getElementById('weather');
-            weatherElement.innerHTML = `
-                <p><strong>Location:</strong> ${data.location.name}, ${data.location.region}, ${data.location.country}</p>
-                <p><strong>Temperature:</strong> ${data.current.temp_c}°C</p>
-                <p><strong>Condition:</strong> ${data.current.condition.text}</p>
-                <p><strong>Wind:</strong> ${data.current.wind_kph} kph, ${data.current.wind_dir}</p>
-                <p><strong>Humidity:</strong> ${data.current.humidity}%</p>
-            `;
-        }
-
-        // Function to get clothing advice using OpenAI API
-        async function getClothingAdvsk-proj-MZC4g05GUdIk6nk6znXQT3BlbkFJ6xO26ztUirYJxM2iKoXXice(weather) {
-            const openAiKey = ''; // Replace with your OpenAI API key
-            const prompt = `Temperature is ${weather.temp_c} degrees Celsius with ${weather.condition.text}. What clothes should someone wear?`;
-
-            const response = await fetch('https://api.openai.com/v1/engines/text-davinci-003/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${openAiKey}`
-                },
-                body: JSON.stringify({
-                    prompt: prompt,
-                    max_tokens: 60
-                })
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                document.getElementById('clothingAdvice').innerHTML = `<p><strong>Advice:</strong> ${data.choices[0].text}</p>`;
-            } else {
-                document.getElementById('clothingAdvice').innerHTML = `<p>Error getting clothing advice. Please check console for details.</p>`;
-                console.error('Failed to fetch clothing advice:', await response.text());
-            }
-        }
-    </script>
+    <script src="scripts.js"></script>
 </body>
 </html>
