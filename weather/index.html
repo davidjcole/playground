@@ -3,43 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather in London</title>
+    <title>Weather Lookup</title>
 </head>
 <body>
-    <h1>Weather in London, UK</h1>
+    <h1>Check the Weather</h1>
+    <div>
+        <input type="text" id="locationInput" placeholder="Enter location (e.g., London, UK)">
+        <button onclick="fetchWeather()">Get Weather</button>
+    </div>
     <div id="weather">
-        <p>Loading weather...</p>
+        <p>Please enter a location and click "Get Weather" to display weather information.</p>
     </div>
 
     <script>
-        // Function to fetch weather data
-        async function fetchWeather() {
-            const apiKey = '<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather in London</title>
-</head>
-<body>
-    <h1>Weather in London, UK</h1>
-    <div id="weather">
-        <p>Loading weather...</p>
-    </div>
-
-    <script>
-        // Function to fetch weather data
+        // Function to fetch weather data based on the user's input
         async function fetchWeather() {
             const apiKey = 'dfe297f009fd4e35b8294540241105'; // Replace 'YOUR_API_KEY' with your actual API key from WeatherAPI.com
-            const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=London&aqi=no`;
+            const location = document.getElementById('locationInput').value;
+            const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${encodeURIComponent(location)}&aqi=no`;
 
             try {
                 const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 const data = await response.json();
 
                 // Display weather information
                 const weatherElement = document.getElementById('weather');
                 weatherElement.innerHTML = `
+                    <p><strong>Location:</strong> ${data.location.name}, ${data.location.region}, ${data.location.country}</p>
                     <p><strong>Temperature:</strong> ${data.current.temp_c}°C</p>
                     <p><strong>Condition:</strong> ${data.current.condition.text}</p>
                     <p><strong>Wind:</strong> ${data.current.wind_kph} kph, ${data.current.wind_dir}</p>
@@ -47,36 +40,9 @@
                 `;
             } catch (error) {
                 console.error('Failed to fetch weather data:', error);
+                document.getElementById('weather').innerHTML = `<p>Error fetching weather data. Please check console for details.</p>`;
             }
         }
-
-        // Fetch weather when the page loads
-        document.addEventListener('DOMContentLoaded', fetchWeather);
-    </script>
-</body>
-</html>
-'; // Replace 'YOUR_API_KEY' with your actual API key from WeatherAPI.com
-            const url = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=London&aqi=no`;
-
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-
-                // Display weather information
-                const weatherElement = document.getElementById('weather');
-                weatherElement.innerHTML = `
-                    <p><strong>Temperature:</strong> ${data.current.temp_c}°C</p>
-                    <p><strong>Condition:</strong> ${data.current.condition.text}</p>
-                    <p><strong>Wind:</strong> ${data.current.wind_kph} kph, ${data.current.wind_dir}</p>
-                    <p><strong>Humidity:</strong> ${data.current.humidity}%</p>
-                `;
-            } catch (error) {
-                console.error('Failed to fetch weather data:', error);
-            }
-        }
-
-        // Fetch weather when the page loads
-        document.addEventListener('DOMContentLoaded', fetchWeather);
     </script>
 </body>
 </html>
