@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tommy Cooper-style Joke Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .container:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            color: #d32f2f;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        #fez {
+            font-size: 3em;
+            margin-bottom: 10px;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            display: inline-block;
+        }
+        #fez:hover {
+            animation: wobble 0.5s ease infinite;
+        }
+        @keyframes wobble {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+            100% { transform: rotate(0deg); }
+        }
+        #setup, #punchline {
+            font-size: 1.2em;
+            margin-bottom: 1rem;
+            min-height: 2em;
+        }
+        #punchline {
+            font-weight: bold;
+            color: #d32f2f;
+        }
+        button {
+            background-color: #d32f2f;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 18px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-family: 'Roboto', sans-serif;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        button:hover {
+            background-color: #b71c1c;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="fez" onclick="tipHat()">🎩</div>
+        <h1>Just Like That!</h1>
+        <p id="setup">Ready for a laugh?</p>
+        <p id="punchline">Click the button!</p>
+        <button onclick="getJoke()">Tell me a joke!</button>
+    </div>
+
+    <audio id="soundEffect" src="https://cdn.freesound.org/previews/591/591726_11861866-lq.mp3"></audio>
+
+    <script>
+        const jokes = [
+            {setup: "I tried to do some magic with this glass of water...", punchline: "But it's just not transparent."},
+            {setup: "I attempted to catch some fog earlier...", punchline: "I mist."},
+            {setup: "I'm opening a shop that only sells helium balloons...", punchline: "Business is really looking up!"},
+            {setup: "I bought some shoes from a drug dealer...", punchline: "I don't know what he laced them with, but I've been tripping all day."},
+            {setup: "I've got a new job at a calendar factory...", punchline: "My main duty is just to make sure the days line up."},
+            {setup: "I tried to catch some invisible men...", punchline: "But I couldn't see them."},
+            {setup: "I bought a wooden whistle...", punchline: "But it wooden whistle."},
+            {setup: "I used to be addicted to soap...", punchline: "But I'm clean now."},
+            {setup: "I tried to grow some plants...", punchline: "But I haven't botany."},
+            {setup: "I'm friends with all electricians...", punchline: "We have great current-cy!"}
+        ];
+
+        function getJoke() {
+            playSound();
+            const setupElement = document.getElementById('setup');
+            const punchlineElement = document.getElementById('punchline');
+            const randomIndex = Math.floor(Math.random() * jokes.length);
+            const selectedJoke = jokes[randomIndex];
+            
+            setupElement.textContent = selectedJoke.setup;
+            punchlineElement.textContent = "...";
+            
+            setTimeout(() => {
+                punchlineElement.textContent = selectedJoke.punchline;
+            }, 800);
+        }
+
+        function tipHat() {
+            const fez = document.getElementById('fez');
+            fez.style.animation = 'none';
+            fez.offsetHeight; /* trigger reflow */
+            fez.style.animation = null;
+        }
+
+        function playSound() {
+            const sound = document.getElementById('soundEffect');
+            sound.currentTime = 0;  // Reset the audio to the beginning
+            sound.play();
+        }
+    </script>
+</body>
+</html>
