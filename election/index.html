@@ -1,54 +1,285 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>How long since we last had a Labour government</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <h1>How long since we last had a Labour government</h1>
-    <div class="flip-clock" id="sinceCounter">
-        <div class="digit-group">
-            <div class="digit days"></div>
-            <div class="label">days</div>
-        </div>
-        <div class="digit-group">
-            <div class="digit hours"></div>
-            <div class="label">hours</div>
-        </div>
-        <div class="digit-group">
-            <div class="digit minutes"></div>
-            <div class="label">minutes</div>
-        </div>
-        <div class="digit-group">
-            <div class="digit seconds"></div>
-            <div class="label">seconds</div>
-        </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>High School Election Game</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      .container {
+        width: 80%;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      #game-area {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Welcome to the High School Election Game!</h1>
+      <div class="form-group">
+        <label for="player1">Player 1 Name:</label>
+        <input type="text" id="player1" />
+      </div>
+      <div class="form-group">
+        <label for="player2">Player 2 Name:</label>
+        <input type="text" id="player2" />
+      </div>
+      <button onclick="startGame()">Start Game</button>
+      <div id="game-area">
+        <h2>Game Area</h2>
+        <div id="status"></div>
+        <button onclick="rollDice()">Roll Dice</button>
+        <div id="dice-result"></div>
+        <div id="actions"></div>
+      </div>
     </div>
+    <script>
+      let currentPlayer;
+      let players = {
+        player1: { name: "", influence: 5, votes: 0 },
+        player2: { name: "", influence: 5, votes: 0 },
+      };
+      const areas = ["Classrooms", "Cafeteria", "Gym", "Library", "Auditorium"];
 
-    <h1>How long until we could next have a Labour government</h1>
-    <div class="flip-clock" id="untilCounter">
-        <div class="digit-group">
-            <div class="digit days"></div>
-            <div class="label">days</div>
-        </div>
-        <div class="digit-group">
-            <div class="digit hours"></div>
-            <div class="label">hours</div>
-        </div>
-        <div class="digit-group">
-            <div class="digit minutes"></div>
-            <div class="label">minutes</div>
-        </div>
-        <div class="digit-group">
-            <div class="digit seconds"></div>
-            <div class="label">seconds</div>
-        </div>
-    </div>
+      function startGame() {
+        players.player1.name = document.getElementById("player1").value;
+        players.player2.name = document.getElementById("player2").value;
+        currentPlayer = "player1";
+        document.getElementById("game-area").style.display = "block";
+        updateStatus();
+      }
 
-    <a href="https://labour.org.uk/" class="vote-button">Vote Labour on 4th July</a>
+      function rollDice() {
+        const roll1 = Math.floor(Math.random() * 6) + 1;
+        const roll2 = Math.floor(Math.random() * 6) + 1;
+        const totalRoll = roll1 + roll2;
+        document.getElementById(
+          "dice-result"
+        ).innerText = `Rolled: ${roll1} and ${roll2}, Total: ${totalRoll}`;
+        movePlayer(totalRoll);
+      }
 
-    <script src="script.js"></script>
-</body>
+      function movePlayer(totalRoll) {
+        const area = areas[totalRoll % areas.length];
+        document.getElementById(
+          "status"
+        ).innerText = `${players[currentPlayer].name} moved to ${area}`;
+        drawEventCard(area);
+      }
+
+      function drawEventCard(area) {
+        const events = {
+          Classrooms: [
+            {
+              message: "Top of the Class! Gain 2 Influence tokens.",
+              influence: 2,
+              votes: 0,
+            },
+            {
+              message: "Extra Credit! Gain 1 Vote token.",
+              influence: 0,
+              votes: 1,
+            },
+            {
+              message: "Pop Quiz Champion! Gain 2 Influence tokens.",
+              influence: 2,
+              votes: 0,
+            },
+          ],
+          Cafeteria: [
+            {
+              message: "Lunchroom Leader! Gain 2 Influence tokens.",
+              influence: 2,
+              votes: 0,
+            },
+            {
+              message: "Club Fair! Gain 1 Vote token.",
+              influence: 0,
+              votes: 1,
+            },
+            {
+              message: "Social Butterfly! Gain 1 Influence token.",
+              influence: 1,
+              votes: 0,
+            },
+          ],
+          Gym: [
+            {
+              message: "Gym Class Hero! Gain 2 Influence tokens.",
+              influence: 2,
+              votes: 0,
+            },
+            {
+              message: "Team Captain! Gain 1 Vote token.",
+              influence: 0,
+              votes: 1,
+            },
+            {
+              message: "Sports Star! Gain 1 Influence token.",
+              influence: 1,
+              votes: 0,
+            },
+          ],
+          Library: [
+            {
+              message: "Study Group Leader! Gain 2 Influence tokens.",
+              influence: 2,
+              votes: 0,
+            },
+            {
+              message: "Book Club President! Gain 1 Vote token.",
+              influence: 0,
+              votes: 1,
+            },
+            {
+              message: "Research Ace! Gain 2 Influence tokens.",
+              influence: 2,
+              votes: 0,
+            },
+          ],
+          Auditorium: [
+            {
+              message: "School Assembly! Gain 1 Influence token.",
+              influence: 1,
+              votes: 0,
+            },
+            {
+              message: "Talent Show Winner! Gain 1 Vote token.",
+              influence: 0,
+              votes: 1,
+            },
+            {
+              message: "Big Speech Opportunity! Gain 2 Influence tokens.",
+              influence: 2,
+              votes: 0,
+            },
+          ],
+        };
+        const event = events[area][Math.floor(Math.random() * 3)];
+        players[currentPlayer].influence += event.influence;
+        players[currentPlayer].votes += event.votes;
+        document.getElementById("status").innerText += ` - ${event.message}`;
+        showActions(area);
+      }
+
+      function showActions(area) {
+        const actions = {
+          Classrooms: [
+            {
+              message: "Study Hard: Gain 3 Influence tokens.",
+              action: () => gainInfluence(3),
+            },
+            {
+              message: "Tutor a Friend: Gain 1 Vote token.",
+              action: () => gainVotes(1),
+            },
+            {
+              message: "Ace the Test: Gain 2 Vote tokens.",
+              action: () => gainVotes(2),
+            },
+          ],
+          Cafeteria: [
+            {
+              message: "Join a Club: Gain 3 Influence tokens.",
+              action: () => gainInfluence(3),
+            },
+            {
+              message: "Host a Party: Gain 1 Vote token.",
+              action: () => gainVotes(1),
+            },
+            {
+              message: "Organize a Charity Event: Gain 2 Vote tokens.",
+              action: () => gainVotes(2),
+            },
+          ],
+          Gym: [
+            {
+              message: "Win a Game: Gain 3 Influence tokens.",
+              action: () => gainInfluence(3),
+            },
+            {
+              message: "Lead a Workout: Gain 1 Vote token.",
+              action: () => gainVotes(1),
+            },
+            {
+              message: "Break a Record: Gain 2 Vote tokens.",
+              action: () => gainVotes(2),
+            },
+          ],
+          Library: [
+            {
+              message: "Research Project: Gain 3 Influence tokens.",
+              action: () => gainInfluence(3),
+            },
+            {
+              message: "Organize a Study Group: Gain 1 Vote token.",
+              action: () => gainVotes(1),
+            },
+            {
+              message: "Write a Book Review: Gain 2 Vote tokens.",
+              action: () => gainVotes(2),
+            },
+          ],
+          Auditorium: [
+            {
+              message: "Perform in a Play: Gain 3 Influence tokens.",
+              action: () => gainInfluence(3),
+            },
+            {
+              message: "Host a Talent Show: Gain 1 Vote token.",
+              action: () => gainVotes(1),
+            },
+            {
+              message: "Give a Speech: Gain 2 Vote tokens.",
+              action: () => gainVotes(2),
+            },
+          ],
+        };
+        const actionsDiv = document.getElementById("actions");
+        actionsDiv.innerHTML = "";
+        actions[area].forEach((action, index) => {
+          const button = document.createElement("button");
+          button.innerText = action.message;
+          button.onclick = () => {
+            action.action();
+            endTurn();
+          };
+          actionsDiv.appendChild(button);
+        });
+      }
+
+      function gainInfluence(amount) {
+        players[currentPlayer].influence += amount;
+        updateStatus();
+      }
+
+      function gainVotes(amount) {
+        players[currentPlayer].votes += amount;
+        updateStatus();
+      }
+
+      function endTurn() {
+        currentPlayer = currentPlayer === "player1" ? "player2" : "player1";
+        updateStatus();
+        if (currentPlayer === "player1") {
+          // End of round, check game over condition here if needed
+        }
+      }
+
+      function updateStatus() {
+        document.getElementById("status").innerText =
+          `Current Player: ${players[currentPlayer].name}\n` +
+          `${players.player1.name}: Influence - ${players.player1.influence}, Votes - ${players.player1.votes}\n` +
+          `${players.player2.name}: Influence - ${players.player2.influence}, Votes - ${players.player2.votes}`;
+      }
+    </script>
+  </body>
 </html>
