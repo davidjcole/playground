@@ -1,409 +1,817 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Draw The Line External Events Summary</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-  <style>
-    :root { --bg:#0a0b10; --card:#0f111a; --text:#f4f6fb; --muted:#aab3d1; --accent:#ffd15a; --accent-ink:#121317; --border:rgba(255,255,255,.08); }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{ margin:0; font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Arial, sans-serif; background:
-      radial-gradient(1200px 600px at 10% -10%, rgba(255,209,90,0.08), transparent 60%),
-      radial-gradient(1000px 500px at 110% 10%, rgba(173,216,230,0.06), transparent 60%), var(--bg); color:var(--text); -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility; }
-    .wrap{max-width:1040px;margin:0 auto;padding:28px}
-    header{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:22px}
-    h1{font-size:24px;margin:0;font-weight:800;letter-spacing:.2px;text-transform:uppercase}
-    .badge{padding:6px 10px;border-radius:999px;background:var(--accent);color:var(--accent-ink);font-weight:800;font-size:12px;box-shadow:0 6px 24px rgba(255,209,90,.25)}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 18px;box-shadow:0 8px 30px rgba(0,0,0,.35)}
-    .stat{display:flex;align-items:center;gap:12px}
-    .stat strong{font-size:32px;line-height:1}
-    .muted{color:var(--muted)}
-    .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-    table{width:100%;border-collapse:separate;border-spacing:0 10px}
-    th,td{text-align:left;padding:12px 14px;cursor:default}
-    th{color:#c3cbea;font-weight:600;text-transform:uppercase;font-size:12px;letter-spacing:.6px;cursor:pointer}
-    tbody tr{background:#0c0f17;border:1px solid var(--border)}
-    tbody tr td:first-child{border-top-left-radius:10px;border-bottom-left-radius:10px}
-    tbody tr td:last-child{border-top-right-radius:10px;border-bottom-right-radius:10px}
-    #error{color:#ffe2e7}
-    .footer{margin-top:16px;color:#94a0c6;font-size:13px}
-    .pill{font-size:12px;padding:6px 10px;border-radius:999px;background:#121521;border:1px solid var(--border);color:#c8d0ef}
-    .hidden{display:none}
-    .ok{color:#7fe3a4}
-    .fail{color:#ffb4c1}
-    .btn{background:var(--accent);border:0;color:var(--accent-ink);padding:10px 14px;border-radius:12px;font-weight:800;cursor:pointer}
-    .btn:hover{filter:brightness(1.05)}
-    .section-title{margin:0;font-size:18px;font-weight:800;position:relative}
-    .section-title:after{content:"";display:block;margin-top:6px;width:56px;height:3px;background:var(--accent);border-radius:3px}
-    /* Tabs */
-    .tabs{display:flex;gap:8px;margin:14px 0}
-    .tab-btn{background:#121521;border:1px solid var(--border);color:#c8d0ef;padding:10px 14px;border-radius:12px;font-weight:800;cursor:pointer}
-    .tab-btn[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);box-shadow:0 6px 24px rgba(255,209,90,.25)}
-    .tab-panel{display:none}
-    .tab-panel.active{display:block}
-    /* Tables */
-    .table-wrapper{overflow:auto; max-height:65vh;}
-    thead tr th{position:sticky; top:0; background:#0d111a}
-    th.sort-asc::after{content:" ▲";}
-    th.sort-desc::after{content:" ▼";}
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <header>
-      <h1>Draw The Line External Events Summary</h1>
-      <span class="badge" id="status-pill">Loading</span>
-    </header>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Draw The Line Events Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #0a0b10;
+        --card: #0f111a;
+        --text: #f4f6fb;
+        --muted: #aab3d1;
+        --accent: #ffd15a;
+        --accent-ink: #121317;
+        --border: rgba(255, 255, 255, 0.08);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu,
+          Arial, sans-serif;
+        background: radial-gradient(
+            1200px 600px at 10% -10%,
+            rgba(255, 209, 90, 0.08),
+            transparent 60%
+          ),
+          radial-gradient(
+            1000px 500px at 110% 10%,
+            rgba(173, 216, 230, 0.06),
+            transparent 60%
+          ),
+          var(--bg);
+        color: var(--text);
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+      .wrap {
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 28px;
+      }
+      header {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 22px;
+      }
+      h1 {
+        font-size: 24px;
+        margin: 0;
+        font-weight: 800;
+        letter-spacing: 0.2px;
+        text-transform: uppercase;
+      }
+      .badge {
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: var(--accent);
+        color: var(--accent-ink);
+        font-weight: 800;
+        font-size: 12px;
+        box-shadow: 0 6px 24px rgba(255, 209, 90, 0.25);
+      }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 16px 18px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+      }
+      .stat {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .stat strong {
+        font-size: 32px;
+        line-height: 1;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 12px 14px;
+        cursor: default;
+      }
+      th {
+        color: #c3cbea;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 12px;
+        letter-spacing: 0.6px;
+        cursor: pointer;
+      }
+      tbody tr {
+        background: #0c0f17;
+        border: 1px solid var(--border);
+      }
+      tbody tr td:first-child {
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+      }
+      tbody tr td:last-child {
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+      }
+      #error {
+        color: #ffe2e7;
+      }
+      .footer {
+        margin-top: 16px;
+        color: #94a0c6;
+        font-size: 13px;
+      }
+      .pill {
+        font-size: 12px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #121521;
+        border: 1px solid var(--border);
+        color: #c8d0ef;
+      }
+      .hidden {
+        display: none;
+      }
+      .ok {
+        color: #7fe3a4;
+      }
+      .fail {
+        color: #ffb4c1;
+      }
+      .btn {
+        background: var(--accent);
+        border: 0;
+        color: var(--accent-ink);
+        padding: 10px 14px;
+        border-radius: 12px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      .btn:hover {
+        filter: brightness(1.05);
+      }
+      .section-title {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 800;
+        position: relative;
+      }
+      .section-title:after {
+        content: "";
+        display: block;
+        margin-top: 6px;
+        width: 56px;
+        height: 3px;
+        background: var(--accent);
+        border-radius: 3px;
+      }
+      /* Tabs */
+      .tabs {
+        display: flex;
+        gap: 8px;
+        margin: 14px 0;
+      }
+      .tab-btn {
+        background: #121521;
+        border: 1px solid var(--border);
+        color: #c8d0ef;
+        padding: 10px 14px;
+        border-radius: 12px;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      .tab-btn[aria-selected="true"] {
+        background: var(--accent);
+        color: var(--accent-ink);
+        box-shadow: 0 6px 24px rgba(255, 209, 90, 0.25);
+      }
+      .tab-panel {
+        display: none;
+      }
+      .tab-panel.active {
+        display: block;
+      }
+      /* Tables */
+      .table-wrapper {
+        overflow: auto;
+        max-height: 65vh;
+      }
+      thead tr th {
+        position: sticky;
+        top: 0;
+        background: #0d111a;
+      }
+      th.sort-asc::after {
+        content: " ▲";
+      }
+      th.sort-desc::after {
+        content: " ▼";
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>Draw The Line External Events Summary</h1>
+        <span class="badge" id="status-pill">Loading</span>
+      </header>
 
-    <!-- Stats -->
-    <div class="card" style="margin-bottom:12px">
-      <div class="stat"><strong id="total">0</strong> <span class="muted">total events</span></div>
-    </div>
-    <div class="card" style="margin-bottom:12px">
-      <div class="stat"><strong id="uniqueCountries">0</strong> <span class="muted">countries represented</span></div>
-    </div>
+      <!-- Stats -->
+      <div class="card" style="margin-bottom: 12px">
+        <div class="stat">
+          <strong id="total">0</strong> <span class="muted">total events</span>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom: 12px">
+        <div class="stat">
+          <strong id="uniqueCountries">0</strong>
+          <span class="muted">countries represented</span>
+        </div>
+      </div>
 
-    <!-- Tabs -->
-    <div class="tabs" role="tablist" aria-label="Views">
-      <button class="tab-btn" id="tabBtnSummary" role="tab" aria-controls="tab-summary" aria-selected="true">Summary</button>
-      <button class="tab-btn" id="tabBtnEvents" role="tab" aria-controls="tab-events" aria-selected="false">All Events</button>
-      <button class="tab-btn" id="tabBtnPlatforms" role="tab" aria-controls="tab-platforms" aria-selected="false">By Platform</button>
-    </div>
+      <!-- Tabs -->
+      <div class="tabs" role="tablist" aria-label="Views">
+        <button
+          class="tab-btn"
+          id="tabBtnSummary"
+          role="tab"
+          aria-controls="tab-summary"
+          aria-selected="true"
+        >
+          Summary
+        </button>
+        <button
+          class="tab-btn"
+          id="tabBtnEvents"
+          role="tab"
+          aria-controls="tab-events"
+          aria-selected="false"
+        >
+          All Events
+        </button>
+        <button
+          class="tab-btn"
+          id="tabBtnPlatforms"
+          role="tab"
+          aria-controls="tab-platforms"
+          aria-selected="false"
+        >
+          By Platform
+        </button>
+      </div>
 
-    <!-- Summary Panel -->
-    <section id="tab-summary" class="tab-panel active" role="tabpanel" aria-labelledby="tabBtnSummary">
-      <div class="card" style="margin-top:12px">
-        <div class="row" style="justify-content:space-between">
-          <h2 class="section-title">Breakdown by Country</h2>
-          <div>
-            <button id="retryBtn" class="btn" title="Retry the data load">Retry</button>
+      <!-- Summary Panel -->
+      <section
+        id="tab-summary"
+        class="tab-panel active"
+        role="tabpanel"
+        aria-labelledby="tabBtnSummary"
+      >
+        <div class="card" style="margin-top: 12px">
+          <div class="row" style="justify-content: space-between">
+            <h2 class="section-title">Breakdown by Country</h2>
+            <div>
+              <button id="retryBtn" class="btn" title="Retry the data load">
+                Retry
+              </button>
+            </div>
+          </div>
+          <div id="error" class="hidden"></div>
+          <table aria-describedby="Breakdown by country">
+            <thead>
+              <tr>
+                <th>Country</th>
+                <th>Count</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+
+        <details class="card" style="margin-top: 12px">
+          <summary>Developer diagnostics & self-tests</summary>
+          <div id="diag"></div>
+        </details>
+      </section>
+
+      <!-- All Events Panel -->
+      <section
+        id="tab-events"
+        class="tab-panel"
+        role="tabpanel"
+        aria-labelledby="tabBtnEvents"
+      >
+        <div class="card" style="margin-top: 12px">
+          <div class="row" style="justify-content: space-between">
+            <h2 class="section-title">All Events</h2>
+            <div class="muted">
+              Showing: id, title, city, country, rsvp platform
+            </div>
+          </div>
+          <div class="table-wrapper" style="margin-top: 8px">
+            <table aria-describedby="All events listing">
+              <thead>
+                <tr>
+                  <th data-field="id" style="min-width: 120px">ID</th>
+                  <th data-field="title" style="min-width: 240px">Title</th>
+                  <th data-field="city" style="min-width: 140px">City</th>
+                  <th data-field="country" style="min-width: 160px">Country</th>
+                  <th data-field="rsvp_platform" style="min-width: 160px">
+                    RSVP Platform
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="eventsBody"></tbody>
+            </table>
           </div>
         </div>
-        <div id="error" class="hidden"></div>
-        <table aria-describedby="Breakdown by country">
-          <thead>
-            <tr><th>Country</th><th>Count</th></tr>
-          </thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-      </div>
+      </section>
 
-      <details class="card" style="margin-top:12px">
-        <summary>Developer diagnostics & self-tests</summary>
-        <div id="diag"></div>
-      </details>
-    </section>
-
-    <!-- All Events Panel -->
-    <section id="tab-events" class="tab-panel" role="tabpanel" aria-labelledby="tabBtnEvents">
-      <div class="card" style="margin-top:12px">
-        <div class="row" style="justify-content:space-between">
-          <h2 class="section-title">All Events</h2>
-          <div class="muted">Showing: id, title, city, country, rsvp platform</div>
+      <!-- By Platform Panel -->
+      <section
+        id="tab-platforms"
+        class="tab-panel"
+        role="tabpanel"
+        aria-labelledby="tabBtnPlatforms"
+      >
+        <div class="card" style="margin-top: 12px">
+          <div class="row" style="justify-content: space-between">
+            <h2 class="section-title">Events by RSVP Platform</h2>
+            <div class="muted">Count of events grouped by platform</div>
+          </div>
+          <div class="table-wrapper" style="margin-top: 8px">
+            <table aria-describedby="Events by platform listing">
+              <thead>
+                <tr>
+                  <th data-platform-sort="name" style="min-width: 200px">
+                    RSVP Platform
+                  </th>
+                  <th data-platform-sort="count" style="min-width: 120px">
+                    Count
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="platformsBody"></tbody>
+            </table>
+          </div>
         </div>
-        <div class="table-wrapper" style="margin-top:8px">
-          <table aria-describedby="All events listing">
-            <thead>
-              <tr>
-                <th data-field="id" style="min-width:120px">ID</th>
-                <th data-field="title" style="min-width:240px">Title</th>
-                <th data-field="city" style="min-width:140px">City</th>
-                <th data-field="country" style="min-width:160px">Country</th>
-                <th data-field="rsvp_platform" style="min-width:160px">RSVP Platform</th>
-              </tr>
-            </thead>
-            <tbody id="eventsBody"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- By Platform Panel -->
-    <section id="tab-platforms" class="tab-panel" role="tabpanel" aria-labelledby="tabBtnPlatforms">
-      <div class="card" style="margin-top:12px">
-        <div class="row" style="justify-content:space-between">
-          <h2 class="section-title">Events by RSVP Platform</h2>
-          <div class="muted">Count of events grouped by platform</div>
-        </div>
-        <div class="table-wrapper" style="margin-top:8px">
-          <table aria-describedby="Events by platform listing">
-            <thead>
-              <tr>
-                <th data-platform-sort="name" style="min-width:200px">RSVP Platform</th>
-                <th data-platform-sort="count" style="min-width:120px">Count</th>
-              </tr>
-            </thead>
-            <tbody id="platformsBody"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
+      <p class="footer">
+        Data source (fixed):
+        <code>https://mapbox-event-finder.vercel.app/api/csv-export</code>
+      </p>
+    </div>
 
-    <p class="footer">Data source (fixed): <code>https://mapbox-event-finder.vercel.app/api/csv-export</code></p>
-  </div>
+    <script>
+      // ============== Config ==================
+      const SOURCE_URL =
+        "https://mapbox-event-finder.vercel.app/api/csv-export";
+      const PAPAPARSE_PRIMARY =
+        "https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js";
+      const PAPAPARSE_FALLBACK =
+        "https://unpkg.com/papaparse@5.4.1/papaparse.min.js";
+      const MAX_RETRIES = 2;
 
-<script>
-  // ============== Config ==================
-  const SOURCE_URL = "https://mapbox-event-finder.vercel.app/api/csv-export";
-  const PAPAPARSE_PRIMARY = "https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js";
-  const PAPAPARSE_FALLBACK = "https://unpkg.com/papaparse@5.4.1/papaparse.min.js";
-  const MAX_RETRIES = 2;
+      // ============== DOM refs =================
+      const totalEl = document.getElementById("total");
+      const uniqueCountriesEl = document.getElementById("uniqueCountries");
+      const tbody = document.getElementById("tableBody");
+      const eventsBody = document.getElementById("eventsBody");
+      const platformsBody = document.getElementById("platformsBody");
+      const errorEl = document.getElementById("error");
+      const statusPill = document.getElementById("status-pill");
+      const diag = document.getElementById("diag");
+      const retryBtn = document.getElementById("retryBtn");
+      const tabBtnSummary = document.getElementById("tabBtnSummary");
+      const tabBtnEvents = document.getElementById("tabBtnEvents");
+      const tabBtnPlatforms = document.getElementById("tabBtnPlatforms");
+      const tabSummary = document.getElementById("tab-summary");
+      const tabEvents = document.getElementById("tab-events");
+      const tabPlatforms = document.getElementById("tab-platforms");
 
-  // ============== DOM refs =================
-  const totalEl = document.getElementById('total');
-  const uniqueCountriesEl = document.getElementById('uniqueCountries');
-  const tbody = document.getElementById('tableBody');
-  const eventsBody = document.getElementById('eventsBody');
-  const platformsBody = document.getElementById('platformsBody');
-  const errorEl = document.getElementById('error');
-  const statusPill = document.getElementById('status-pill');
-  const diag = document.getElementById('diag');
-  const retryBtn = document.getElementById('retryBtn');
-  const tabBtnSummary = document.getElementById('tabBtnSummary');
-  const tabBtnEvents = document.getElementById('tabBtnEvents');
-  const tabBtnPlatforms = document.getElementById('tabBtnPlatforms');
-  const tabSummary = document.getElementById('tab-summary');
-  const tabEvents = document.getElementById('tab-events');
-  const tabPlatforms = document.getElementById('tab-platforms');
+      let parsedRows = [];
+      let currentSort = { field: null, dir: null };
+      let currentPlatformSort = { by: "count", dir: "desc" };
 
-  let parsedRows = [];
-  let currentSort = { field:null, dir:null };
-  let currentPlatformSort = { by:'count', dir:'desc' };
-
-  function setLoading(isLoading){ statusPill.textContent = isLoading ? 'Loading' : 'Idle'; }
-
-  // Tabs logic
-  function activateTab(which){
-    const isSummary = which === 'summary';
-    const isEvents = which === 'events';
-    const isPlatforms = which === 'platforms';
-    tabSummary.classList.toggle('active', isSummary);
-    tabEvents.classList.toggle('active', isEvents);
-    tabPlatforms.classList.toggle('active', isPlatforms);
-    tabBtnSummary.setAttribute('aria-selected', String(isSummary));
-    tabBtnEvents.setAttribute('aria-selected', String(isEvents));
-    tabBtnPlatforms.setAttribute('aria-selected', String(isPlatforms));
-  }
-  tabBtnSummary.addEventListener('click', ()=> activateTab('summary'));
-  tabBtnEvents.addEventListener('click', ()=> activateTab('events'));
-  tabBtnPlatforms.addEventListener('click', ()=> activateTab('platforms'));
-
-  // Key helpers
-  function normalizeKeyName(k){ return String(k||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
-  function resolveKey(row, target){
-    if (!row || typeof row !== 'object') return null;
-    const want = normalizeKeyName(target);
-    for (const k of Object.keys(row)){
-      if (normalizeKeyName(k) === want) return k;
-    }
-    return null;
-  }
-  function resolveCountryKey(row){ return resolveKey(row, 'country'); }
-
-  function normalizeCountry(val){
-    if(val == null) return 'Unknown';
-    let s = String(val).trim();
-    if(!s) return 'Unknown';
-    const map = { 'US':'United States','UK':'United Kingdom','GB':'United Kingdom','CD':'Congo (DRC)','BI':'Burundi','SL':'Sierra Leone','JM':'Jamaica','PR':'Puerto Rico' };
-    return map[s] || s;
-  }
-
-  function summarize(rows){
-    const cleaned = (Array.isArray(rows)?rows:[]).filter(r=>r && typeof r==='object' && Object.keys(r).length>0);
-    const counts = new Map();
-    for(const r of cleaned){
-      const key = resolveCountryKey(r);
-      const value = key ? r[key] : undefined;
-      const c = normalizeCountry(value);
-      counts.set(c, (counts.get(c)||0)+1);
-    }
-    const sorted = Array.from(counts.entries()).sort((a,b)=> b[1]-a[1] || a[0].localeCompare(b[0]));
-    return { total: cleaned.length, byCountry: sorted };
-  }
-
-  function aggregateByPlatform(rows){
-    const cleaned = (Array.isArray(rows)?rows:[]).filter(r=>r && typeof r==='object' && Object.keys(r).length>0);
-    const counts = new Map();
-    for(const r of cleaned){
-      const key = resolveKey(r,'rsvp_platform') || resolveKey(r,'rsvp platform');
-      let v = key ? r[key] : '';
-      v = String(v ?? '').trim();
-      const platform = v ? v : 'Unknown';
-      counts.set(platform, (counts.get(platform)||0)+1);
-    }
-    const arr = Array.from(counts.entries());
-    // default sort: count desc, then name asc
-    arr.sort((a,b)=> b[1]-a[1] || a[0].localeCompare(b[0]));
-    return arr;
-  }
-
-  function renderSummary({total, byCountry}){
-    totalEl.textContent = total;
-    uniqueCountriesEl.textContent = byCountry.length;
-    tbody.innerHTML = '';
-    for(const [country,count] of byCountry){
-      const tr = document.createElement('tr');
-      const tdC = document.createElement('td'); tdC.textContent = country;
-      const tdN = document.createElement('td'); tdN.textContent = count;
-      tr.appendChild(tdC); tr.appendChild(tdN);
-      tbody.appendChild(tr);
-    }
-  }
-
-  function getField(row, field){ const k=resolveKey(row,field); return k ? (row[k] ?? '') : ''; }
-
-  function renderEventsTable(rows){
-    eventsBody.innerHTML = '';
-    for(const r of rows){
-      const tr=document.createElement('tr');
-      const id=getField(r,'id');
-      const title=getField(r,'title');
-      const city=getField(r,'city');
-      const countryVal=normalizeCountry(getField(r,'country'));
-      const rsvp=getField(r,'rsvp_platform')||getField(r,'rsvp platform');
-      const cells=[id,title,city,countryVal,rsvp];
-      for(const c of cells){ const td=document.createElement('td'); td.textContent=c==null?'':String(c); tr.appendChild(td);} 
-      eventsBody.appendChild(tr);
-    }
-  }
-
-  function renderPlatformsTable(platformPairs){
-    platformsBody.innerHTML = '';
-    for(const [name,count] of platformPairs){
-      const tr=document.createElement('tr');
-      const tdN=document.createElement('td'); tdN.textContent = name;
-      const tdC=document.createElement('td'); tdC.textContent = count;
-      tr.appendChild(tdN); tr.appendChild(tdC);
-      platformsBody.appendChild(tr);
-    }
-  }
-
-  function sortEvents(field){
-    if(currentSort.field===field){ currentSort.dir = currentSort.dir==='asc'?'desc':'asc'; }
-    else { currentSort.field=field; currentSort.dir='asc'; }
-    document.querySelectorAll('#tab-events thead th').forEach(th=>{ th.classList.remove('sort-asc','sort-desc'); });
-    const th=document.querySelector(`#tab-events thead th[data-field="${field}"]`);
-    if(th) th.classList.add(currentSort.dir==='asc'?'sort-asc':'sort-desc');
-    const sorted=[...parsedRows];
-    sorted.sort((a,b)=>{
-      const va=(field==='country'?normalizeCountry(getField(a,field)):getField(a,field)).toLowerCase();
-      const vb=(field==='country'?normalizeCountry(getField(b,field)):getField(b,field)).toLowerCase();
-      if(va<vb) return currentSort.dir==='asc'?-1:1;
-      if(va>vb) return currentSort.dir==='asc'?1:-1;
-      return 0;
-    });
-    renderEventsTable(sorted);
-  }
-
-  function sortPlatforms(by){
-    if(currentPlatformSort.by===by){ currentPlatformSort.dir = currentPlatformSort.dir==='asc'?'desc':'asc'; }
-    else { currentPlatformSort.by=by; currentPlatformSort.dir = by==='count' ? 'desc' : 'asc'; }
-    // clear indicators
-    document.querySelectorAll('#tab-platforms thead th').forEach(th=> th.classList.remove('sort-asc','sort-desc'));
-    const th = document.querySelector(`#tab-platforms thead th[data-platform-sort="${by}"]`);
-    if(th) th.classList.add(currentPlatformSort.dir==='asc'?'sort-asc':'sort-desc');
-
-    let pairs = aggregateByPlatform(parsedRows);
-    pairs.sort((a,b)=>{
-      if(by==='name'){
-        const va=a[0].toLowerCase(), vb=b[0].toLowerCase();
-        if(va<vb) return currentPlatformSort.dir==='asc'?-1:1;
-        if(va>vb) return currentPlatformSort.dir==='asc'?1:-1;
-        return 0;
-      } else { // count
-        if(a[1]===b[1]) return a[0].localeCompare(b[0]);
-        return currentPlatformSort.dir==='asc' ? a[1]-b[1] : b[1]-a[1];
+      function setLoading(isLoading) {
+        statusPill.textContent = isLoading ? "Loading" : "Idle";
       }
-    });
-    renderPlatformsTable(pairs);
-  }
 
-  // ============== Diagnostics / Tests =================
-  function assert(cond,msg){ const p=document.createElement('p'); p.textContent=(cond?'✓ ':'✗ ')+msg; p.className=cond?'ok':'fail'; diag.appendChild(p); if(!cond) console.error('Test failed:',msg); else console.debug('Test passed:',msg); return cond; }
-  function runTests(){
-    diag.innerHTML='';
-    const rows1=[{ country:'US' },{ country:'GB' },{ country:'' },{ }];
-    const s1=summarize(rows1);
-    assert(s1.total===3,'Total counts non-empty rows');
-    const map1=Object.fromEntries(s1.byCountry);
-    assert(map1['United States']===1,'Maps US to United States');
-    assert(map1['United Kingdom']===1,'Maps GB to United Kingdom');
-    assert(map1['Unknown']===1,'Blanks grouped under Unknown');
+      // Tabs logic
+      function activateTab(which) {
+        const isSummary = which === "summary";
+        const isEvents = which === "events";
+        const isPlatforms = which === "platforms";
+        tabSummary.classList.toggle("active", isSummary);
+        tabEvents.classList.toggle("active", isEvents);
+        tabPlatforms.classList.toggle("active", isPlatforms);
+        tabBtnSummary.setAttribute("aria-selected", String(isSummary));
+        tabBtnEvents.setAttribute("aria-selected", String(isEvents));
+        tabBtnPlatforms.setAttribute("aria-selected", String(isPlatforms));
+      }
+      tabBtnSummary.addEventListener("click", () => activateTab("summary"));
+      tabBtnEvents.addEventListener("click", () => activateTab("events"));
+      tabBtnPlatforms.addEventListener("click", () => activateTab("platforms"));
 
-    const ex={ ID:'123', Title:'Hello', CITY:'Paris', Country:'FR', 'RSVP Platform':'controlshift' };
-    const rowVals=[ getField(ex,'id'), getField(ex,'title'), getField(ex,'city'), normalizeCountry(getField(ex,'country')), getField(ex,'rsvp_platform')||getField(ex,'rsvp platform') ];
-    assert(rowVals[0]==='123' && rowVals[1]==='Hello' && rowVals[2]==='Paris' && rowVals[3]==='France' && rowVals[4]==='controlshift','Events table extracts fields case-insensitively with space/underscore variants');
+      // Key helpers
+      function normalizeKeyName(k) {
+        return String(k || "")
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, "");
+      }
+      function resolveKey(row, target) {
+        if (!row || typeof row !== "object") return null;
+        const want = normalizeKeyName(target);
+        for (const k of Object.keys(row)) {
+          if (normalizeKeyName(k) === want) return k;
+        }
+        return null;
+      }
+      function resolveCountryKey(row) {
+        return resolveKey(row, "country");
+      }
 
-    const rowsPlat=[ { 'rsvp_platform':'controlshift' }, { 'RSVP Platform':'actionkit' }, { 'rsvp platform':'' }, { } ];
-    const platPairs = aggregateByPlatform(rowsPlat);
-    const platMap = Object.fromEntries(platPairs);
-    assert(platMap['controlshift']===1 && platMap['actionkit']===1 && platMap['Unknown']===2, 'Platform aggregation counts values and Unknown correctly');
-  }
+      function normalizeCountry(val) {
+        if (val == null) return "Unknown";
+        let s = String(val).trim();
+        if (!s) return "Unknown";
+        const map = {
+          US: "United States",
+          UK: "United Kingdom",
+          GB: "United Kingdom",
+          CD: "Congo (DRC)",
+          BI: "Burundi",
+          SL: "Sierra Leone",
+          JM: "Jamaica",
+          PR: "Puerto Rico",
+        };
+        return map[s] || s;
+      }
 
-  // ============== Papa loader =================
-  function loadScriptOnce(src){ return new Promise((res,rej)=>{ const s=document.createElement('script'); s.src=src; s.async=false; s.onload=()=>res(); s.onerror=()=>rej(new Error('Failed to load '+src)); document.head.appendChild(s); }); }
-  async function ensurePapa(){ if(window.Papa) return; try{ await loadScriptOnce(PAPAPARSE_PRIMARY); } catch(e1){ console.warn('Primary PapaParse CDN failed, trying fallback...', e1); await loadScriptOnce(PAPAPARSE_FALLBACK); } if(!window.Papa) throw new Error('PapaParse failed to load'); }
+      function summarize(rows) {
+        const cleaned = (Array.isArray(rows) ? rows : []).filter(
+          (r) => r && typeof r === "object" && Object.keys(r).length > 0
+        );
+        const counts = new Map();
+        for (const r of cleaned) {
+          const key = resolveCountryKey(r);
+          const value = key ? r[key] : undefined;
+          const c = normalizeCountry(value);
+          counts.set(c, (counts.get(c) || 0) + 1);
+        }
+        const sorted = Array.from(counts.entries()).sort(
+          (a, b) => b[1] - a[1] || a[0].localeCompare(b[0])
+        );
+        return { total: cleaned.length, byCountry: sorted };
+      }
 
-  // ============== Error helpers =================
-  function showFriendlyError(err, attempt, maxAttempts){ const hints = [ '• The CSV host might be down or blocking cross-origin requests (CORS).', '• If the CSV schema changed, expected columns include id, title, city, country, rsvp_platform (any case / _ or space). Rows with missing/blank country are "Unknown".', '• Network hiccup: retry may fix it.' ]; errorEl.innerHTML = `
-      <div><strong>Unable to load data.</strong></div>
-      <div class="muted">Attempt ${attempt} of ${maxAttempts+1}</div>
-      <ul style="margin:8px 0 0 16px">
-        ${hints.map(h=>`<li>${h}</li>`).join('')}
-      </ul>
-      <div class="muted">${err && err.message ? err.message : ''}</div>
-    `; errorEl.classList.remove('hidden'); }
-  function clearError(){ errorEl.textContent=''; errorEl.classList.add('hidden'); }
+      function aggregateByPlatform(rows) {
+        const cleaned = (Array.isArray(rows) ? rows : []).filter(
+          (r) => r && typeof r === "object" && Object.keys(r).length > 0
+        );
+        const counts = new Map();
+        for (const r of cleaned) {
+          const key =
+            resolveKey(r, "rsvp_platform") || resolveKey(r, "rsvp platform");
+          let v = key ? r[key] : "";
+          v = String(v ?? "").trim();
+          const platform = v ? v : "Unknown";
+          counts.set(platform, (counts.get(platform) || 0) + 1);
+        }
+        const arr = Array.from(counts.entries());
+        // default sort: count desc, then name asc
+        arr.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+        return arr;
+      }
 
-  // ============== Data load with retry =================
-  async function loadCSVWithRetry(maxRetries = MAX_RETRIES){
-    setLoading(true); clearError(); let attempt = 0;
-    while(true){
-      try{
-        await ensurePapa();
-        await new Promise((resolve, reject)=>{
-          window.Papa.parse(SOURCE_URL, { download: true, header: true, skipEmptyLines: 'greedy', complete: results => {
-            try{
-              const { data, errors } = results; if(errors && errors.length){ console.warn('Parse warnings:', errors); }
-              parsedRows = Array.isArray(data) ? data : [];
-              const summary = summarize(parsedRows);
-              renderSummary(summary);
-              renderEventsTable(parsedRows);
-              // Platforms
-              const pairs = aggregateByPlatform(parsedRows);
-              renderPlatformsTable(pairs);
-              // Default sort indicators
-              sortEvents('title');
-              sortPlatforms('count');
-              setLoading(false); resolve();
-            }catch(inner){ reject(inner); }
-          }, error: err => reject(err) });
+      function renderSummary({ total, byCountry }) {
+        totalEl.textContent = total;
+        uniqueCountriesEl.textContent = byCountry.length;
+        tbody.innerHTML = "";
+        for (const [country, count] of byCountry) {
+          const tr = document.createElement("tr");
+          const tdC = document.createElement("td");
+          tdC.textContent = country;
+          const tdN = document.createElement("td");
+          tdN.textContent = count;
+          tr.appendChild(tdC);
+          tr.appendChild(tdN);
+          tbody.appendChild(tr);
+        }
+      }
+
+      function getField(row, field) {
+        const k = resolveKey(row, field);
+        return k ? row[k] ?? "" : "";
+      }
+
+      function renderEventsTable(rows) {
+        eventsBody.innerHTML = "";
+        for (const r of rows) {
+          const tr = document.createElement("tr");
+          const id = getField(r, "id");
+          const title = getField(r, "title");
+          const city = getField(r, "city");
+          const countryVal = normalizeCountry(getField(r, "country"));
+          const rsvp =
+            getField(r, "rsvp_platform") || getField(r, "rsvp platform");
+          const cells = [id, title, city, countryVal, rsvp];
+          for (const c of cells) {
+            const td = document.createElement("td");
+            td.textContent = c == null ? "" : String(c);
+            tr.appendChild(td);
+          }
+          eventsBody.appendChild(tr);
+        }
+      }
+
+      function renderPlatformsTable(platformPairs) {
+        platformsBody.innerHTML = "";
+        for (const [name, count] of platformPairs) {
+          const tr = document.createElement("tr");
+          const tdN = document.createElement("td");
+          tdN.textContent = name;
+          const tdC = document.createElement("td");
+          tdC.textContent = count;
+          tr.appendChild(tdN);
+          tr.appendChild(tdC);
+          platformsBody.appendChild(tr);
+        }
+      }
+
+      function sortEvents(field) {
+        if (currentSort.field === field) {
+          currentSort.dir = currentSort.dir === "asc" ? "desc" : "asc";
+        } else {
+          currentSort.field = field;
+          currentSort.dir = "asc";
+        }
+        document.querySelectorAll("#tab-events thead th").forEach((th) => {
+          th.classList.remove("sort-asc", "sort-desc");
         });
-        break;
-      }catch(err){
-        console.error('Load attempt failed', attempt+1, err);
-        showFriendlyError(err, attempt+1, maxRetries);
-        if(attempt >= maxRetries){ statusPill.textContent = 'Error'; setLoading(false); break; }
-        const delay = 500 * Math.pow(2, attempt); await new Promise(r => setTimeout(r, delay)); attempt++;
+        const th = document.querySelector(
+          `#tab-events thead th[data-field="${field}"]`
+        );
+        if (th)
+          th.classList.add(
+            currentSort.dir === "asc" ? "sort-asc" : "sort-desc"
+          );
+        const sorted = [...parsedRows];
+        sorted.sort((a, b) => {
+          const va = (
+            field === "country"
+              ? normalizeCountry(getField(a, field))
+              : getField(a, field)
+          ).toLowerCase();
+          const vb = (
+            field === "country"
+              ? normalizeCountry(getField(b, field))
+              : getField(b, field)
+          ).toLowerCase();
+          if (va < vb) return currentSort.dir === "asc" ? -1 : 1;
+          if (va > vb) return currentSort.dir === "asc" ? 1 : -1;
+          return 0;
+        });
+        renderEventsTable(sorted);
       }
-    }
-  }
 
-  // Wire up sorting handlers
-  document.addEventListener('click', (e)=>{
-    const th = e.target.closest('#tab-events thead th');
-    if(th && th.dataset.field){ sortEvents(th.dataset.field); }
-    const thp = e.target.closest('#tab-platforms thead th');
-    if(thp && thp.dataset.platformSort){ sortPlatforms(thp.dataset.platformSort); }
-  });
+      function sortPlatforms(by) {
+        if (currentPlatformSort.by === by) {
+          currentPlatformSort.dir =
+            currentPlatformSort.dir === "asc" ? "desc" : "asc";
+        } else {
+          currentPlatformSort.by = by;
+          currentPlatformSort.dir = by === "count" ? "desc" : "asc";
+        }
+        // clear indicators
+        document
+          .querySelectorAll("#tab-platforms thead th")
+          .forEach((th) => th.classList.remove("sort-asc", "sort-desc"));
+        const th = document.querySelector(
+          `#tab-platforms thead th[data-platform-sort="${by}"]`
+        );
+        if (th)
+          th.classList.add(
+            currentPlatformSort.dir === "asc" ? "sort-asc" : "sort-desc"
+          );
 
-  // Init
-  (function init(){ runTests(); loadCSVWithRetry(); })();
-  retryBtn.addEventListener('click', ()=> loadCSVWithRetry());
-</script>
-</body>
+        let pairs = aggregateByPlatform(parsedRows);
+        pairs.sort((a, b) => {
+          if (by === "name") {
+            const va = a[0].toLowerCase(),
+              vb = b[0].toLowerCase();
+            if (va < vb) return currentPlatformSort.dir === "asc" ? -1 : 1;
+            if (va > vb) return currentPlatformSort.dir === "asc" ? 1 : -1;
+            return 0;
+          } else {
+            // count
+            if (a[1] === b[1]) return a[0].localeCompare(b[0]);
+            return currentPlatformSort.dir === "asc"
+              ? a[1] - b[1]
+              : b[1] - a[1];
+          }
+        });
+        renderPlatformsTable(pairs);
+      }
+
+      // ============== Diagnostics / Tests =================
+      function assert(cond, msg) {
+        const p = document.createElement("p");
+        p.textContent = (cond ? "✓ " : "✗ ") + msg;
+        p.className = cond ? "ok" : "fail";
+        diag.appendChild(p);
+        if (!cond) console.error("Test failed:", msg);
+        else console.debug("Test passed:", msg);
+        return cond;
+      }
+      function runTests() {
+        diag.innerHTML = "";
+        const rows1 = [
+          { country: "US" },
+          { country: "GB" },
+          { country: "" },
+          {},
+        ];
+        const s1 = summarize(rows1);
+        assert(s1.total === 3, "Total counts non-empty rows");
+        const map1 = Object.fromEntries(s1.byCountry);
+        assert(map1["United States"] === 1, "Maps US to United States");
+        assert(map1["United Kingdom"] === 1, "Maps GB to United Kingdom");
+        assert(map1["Unknown"] === 1, "Blanks grouped under Unknown");
+
+        const ex = {
+          ID: "123",
+          Title: "Hello",
+          CITY: "Paris",
+          Country: "FR",
+          "RSVP Platform": "controlshift",
+        };
+        const rowVals = [
+          getField(ex, "id"),
+          getField(ex, "title"),
+          getField(ex, "city"),
+          normalizeCountry(getField(ex, "country")),
+          getField(ex, "rsvp_platform") || getField(ex, "rsvp platform"),
+        ];
+        assert(
+          rowVals[0] === "123" &&
+            rowVals[1] === "Hello" &&
+            rowVals[2] === "Paris" &&
+            rowVals[3] === "France" &&
+            rowVals[4] === "controlshift",
+          "Events table extracts fields case-insensitively with space/underscore variants"
+        );
+
+        const rowsPlat = [
+          { rsvp_platform: "controlshift" },
+          { "RSVP Platform": "actionkit" },
+          { "rsvp platform": "" },
+          {},
+        ];
+        const platPairs = aggregateByPlatform(rowsPlat);
+        const platMap = Object.fromEntries(platPairs);
+        assert(
+          platMap["controlshift"] === 1 &&
+            platMap["actionkit"] === 1 &&
+            platMap["Unknown"] === 2,
+          "Platform aggregation counts values and Unknown correctly"
+        );
+      }
+
+      // ============== Papa loader =================
+      function loadScriptOnce(src) {
+        return new Promise((res, rej) => {
+          const s = document.createElement("script");
+          s.src = src;
+          s.async = false;
+          s.onload = () => res();
+          s.onerror = () => rej(new Error("Failed to load " + src));
+          document.head.appendChild(s);
+        });
+      }
+      async function ensurePapa() {
+        if (window.Papa) return;
+        try {
+          await loadScriptOnce(PAPAPARSE_PRIMARY);
+        } catch (e1) {
+          console.warn("Primary PapaParse CDN failed, trying fallback...", e1);
+          await loadScriptOnce(PAPAPARSE_FALLBACK);
+        }
+        if (!window.Papa) throw new Error("PapaParse failed to load");
+      }
+
+      // ============== Error helpers =================
+      function showFriendlyError(err, attempt, maxAttempts) {
+        const hints = [
+          "• The CSV host might be down or blocking cross-origin requests (CORS).",
+          '• If the CSV schema changed, expected columns include id, title, city, country, rsvp_platform (any case / _ or space). Rows with missing/blank country are "Unknown".',
+          "• Network hiccup: retry may fix it.",
+        ];
+        errorEl.innerHTML = `
+      <div><strong>Unable to load data.</strong></div>
+      <div class="muted">Attempt ${attempt} of ${maxAttempts + 1}</div>
+      <ul style="margin:8px 0 0 16px">
+        ${hints.map((h) => `<li>${h}</li>`).join("")}
+      </ul>
+      <div class="muted">${err && err.message ? err.message : ""}</div>
+    `;
+        errorEl.classList.remove("hidden");
+      }
+      function clearError() {
+        errorEl.textContent = "";
+        errorEl.classList.add("hidden");
+      }
+
+      // ============== Data load with retry =================
+      async function loadCSVWithRetry(maxRetries = MAX_RETRIES) {
+        setLoading(true);
+        clearError();
+        let attempt = 0;
+        while (true) {
+          try {
+            await ensurePapa();
+            await new Promise((resolve, reject) => {
+              window.Papa.parse(SOURCE_URL, {
+                download: true,
+                header: true,
+                skipEmptyLines: "greedy",
+                complete: (results) => {
+                  try {
+                    const { data, errors } = results;
+                    if (errors && errors.length) {
+                      console.warn("Parse warnings:", errors);
+                    }
+                    parsedRows = Array.isArray(data) ? data : [];
+                    const summary = summarize(parsedRows);
+                    renderSummary(summary);
+                    renderEventsTable(parsedRows);
+                    // Platforms
+                    const pairs = aggregateByPlatform(parsedRows);
+                    renderPlatformsTable(pairs);
+                    // Default sort indicators
+                    sortEvents("title");
+                    sortPlatforms("count");
+                    setLoading(false);
+                    resolve();
+                  } catch (inner) {
+                    reject(inner);
+                  }
+                },
+                error: (err) => reject(err),
+              });
+            });
+            break;
+          } catch (err) {
+            console.error("Load attempt failed", attempt + 1, err);
+            showFriendlyError(err, attempt + 1, maxRetries);
+            if (attempt >= maxRetries) {
+              statusPill.textContent = "Error";
+              setLoading(false);
+              break;
+            }
+            const delay = 500 * Math.pow(2, attempt);
+            await new Promise((r) => setTimeout(r, delay));
+            attempt++;
+          }
+        }
+      }
+
+      // Wire up sorting handlers
+      document.addEventListener("click", (e) => {
+        const th = e.target.closest("#tab-events thead th");
+        if (th && th.dataset.field) {
+          sortEvents(th.dataset.field);
+        }
+        const thp = e.target.closest("#tab-platforms thead th");
+        if (thp && thp.dataset.platformSort) {
+          sortPlatforms(thp.dataset.platformSort);
+        }
+      });
+
+      // Init
+      (function init() {
+        runTests();
+        loadCSVWithRetry();
+      })();
+      retryBtn.addEventListener("click", () => loadCSVWithRetry());
+    </script>
+  </body>
 </html>
