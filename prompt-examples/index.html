@@ -371,6 +371,23 @@
       font-size: 12.5px;
       border-top: 1px solid var(--border);
     }
+  
+    .credit{
+      margin-top: 14px;
+      padding: 12px 14px;
+      color: var(--muted);
+      font-size: 12.5px;
+      text-align: center;
+    }
+    .credit a{
+      color: var(--text);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(96,165,250,.35);
+    }
+    .credit a:hover{
+      border-bottom-color: rgba(96,165,250,.75);
+    }
+
   </style>
 </head>
 <body>
@@ -440,6 +457,13 @@
         </div>
       </section>
     </div>
+
+    <footer class="credit panel">
+      <div>
+        Based on the work of <a href="https://www.oneusefulthing.org/p/claude-code-and-what-comes-next" target="_blank" rel="noopener noreferrer">Ethan Mollick</a>
+      </div>
+    </footer>
+
   </div>
 
   <div class="toast" id="toast">
