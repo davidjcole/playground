@@ -22,7 +22,7 @@ function fogToGradeAndAge(fog){
   const grade = clamp(Math.round(fog), 1, 17);
 
   // Rough mapping: Grade 1 is about age 6
-  const age = clamp(grade + 5, 6, 25);
+  const age = clamp(grade + 5, 6, 21);
 
   return { grade, age };
 }
@@ -277,7 +277,7 @@ function update(){
   if (wordCount === 0){
     els.mFog.textContent = "N/A";
     els.mComplex.textContent = "0";
-    els.mFogGrade.textContent = "Grade: N/A • Age: N/A • School level: N/A";
+    els.mFogGrade.innerHTML = "Grade: N/A<br>Age: N/A<br>School level: N/A";
     setFogPill(0);
   } else {
     const fog = isFinite(fogRes.fog) ? fogRes.fog : 0;
@@ -292,11 +292,11 @@ function update(){
 
     const { grade, age } = fogToGradeAndAge(fog);
     if (grade == null){
-      els.mFogGrade.textContent = "Grade: N/A • Age: N/A • School level: N/A";
+      els.mFogGrade.innerHTML = "Grade: N/A<br>Age: N/A<br>School level: N/A";
     } else {
       const schoolLevel = fogSchoolLevel(grade) || "N/A";
       const gradeText = fog > 17 ? "17+" : String(grade);
-      els.mFogGrade.textContent = `Grade: ${gradeText} • Age: ${age}+ • School level: ${schoolLevel}`;
+      els.mFogGrade.innerHTML = `Grade: ${gradeText}<br>Age: ${age}+<br>School level: ${schoolLevel}`;
     }
 
     setFogPill(fog);
