@@ -108,7 +108,7 @@
           <div class="metric full">
             <div class="row">
               <div>
-                <div class="k">Gunning Fog Index</div>
+                <div class="k">Readability Score</div>
                 <div class="v" id="mFog">N/A</div>
               </div>
               <div class="right">
@@ -117,7 +117,6 @@
               </div>
             </div>
             <div class="s muted">
-              <div>Formula: <span class="mono">0.4 × (words/sentences + 100×complex/words)</span></div>
               <div id="mFogGrade">Grade: N/A • Age: N/A</div>
             </div>
           </div>
@@ -153,6 +152,10 @@
       </div>
       <div class="bd note">
         <div>
+          Readability Score uses the Gunning Fog formula to estimate years of education needed based on average sentence length and the share of complex words.
+          Formula: <span class="mono">0.4 × (words/sentences + 100×complex/words)</span>.
+        </div>
+        <div class="spacer">
           Sentence detection and syllable counting are approximations, so readability is an estimate.
           For best results, use normal punctuation and avoid lists without periods.
         </div>

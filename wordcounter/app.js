@@ -19,12 +19,30 @@ function fogToGradeAndAge(fog){
   if (!isFinite(fog) || fog <= 0) return { grade: null, age: null };
 
   // Fog is commonly interpreted as years of education needed
-  const grade = clamp(Math.round(fog), 1, 20);
+  const grade = clamp(Math.round(fog), 1, 17);
 
   // Rough mapping: Grade 1 is about age 6
   const age = clamp(grade + 5, 6, 25);
 
   return { grade, age };
+}
+
+function fogSchoolLevel(grade){
+  const levels = {
+    17: "College graduate",
+    16: "College senior",
+    15: "College junior",
+    14: "College sophomore",
+    13: "College freshman",
+    12: "High school senior",
+    11: "High school junior",
+    10: "High school sophomore",
+    9: "High school freshman",
+    8: "Eighth grade",
+    7: "Seventh grade",
+    6: "Sixth grade"
+  };
+  return levels[grade] || null;
 }
 
 function formatDurationSeconds(totalSeconds){
@@ -259,18 +277,26 @@ function update(){
   if (wordCount === 0){
     els.mFog.textContent = "N/A";
     els.mComplex.textContent = "0";
-    els.mFogGrade.textContent = "Grade: N/A • Age: N/A";
+    els.mFogGrade.textContent = "Grade: N/A • Age: N/A • School level: N/A";
     setFogPill(0);
   } else {
     const fog = isFinite(fogRes.fog) ? fogRes.fog : 0;
-    els.mFog.textContent = fog ? fog.toFixed(1) : "N/A";
+    if (!fog){
+      els.mFog.textContent = "N/A";
+    } else if (fog > 17){
+      els.mFog.textContent = "17+";
+    } else {
+      els.mFog.textContent = fog.toFixed(1);
+    }
     els.mComplex.textContent = fogRes.complex.toLocaleString();
 
     const { grade, age } = fogToGradeAndAge(fog);
     if (grade == null){
-      els.mFogGrade.textContent = "Grade: N/A • Age: N/A";
+      els.mFogGrade.textContent = "Grade: N/A • Age: N/A • School level: N/A";
     } else {
-      els.mFogGrade.textContent = `Grade: ${grade} • Age: ${age}+`;
+      const schoolLevel = fogSchoolLevel(grade) || "N/A";
+      const gradeText = fog > 17 ? "17+" : String(grade);
+      els.mFogGrade.textContent = `Grade: ${gradeText} • Age: ${age}+ • School level: ${schoolLevel}`;
     }
 
     setFogPill(fog);
@@ -348,23 +374,51 @@ els.spm.addEventListener("input", () => {
 });
 
 
-function applyTheme(theme){
+function applyTheme(theme, persist = true){
   const t = theme === "light" ? "light" : "dark";
   document.documentElement.setAttribute("data-theme", t);
 
   const isDark = t === "dark";
   if (els.themeToggle) els.themeToggle.checked = isDark;
 
+  if (!persist) return;
   try { localStorage.setItem(THEME_KEY, t); } catch {}
 }
 
-function initTheme(){
-  let t = "dark";
+function getSavedTheme(){
   try {
     const saved = localStorage.getItem(THEME_KEY);
-    if (saved === "light" || saved === "dark") t = saved;
+    if (saved === "light" || saved === "dark") return saved;
   } catch {}
-  applyTheme(t);
+  return null;
+}
+
+function getSystemTheme(){
+  const prefersDark = typeof window.matchMedia === "function"
+    && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  return prefersDark ? "dark" : "light";
+}
+
+function initTheme(){
+  const savedTheme = getSavedTheme();
+  if (savedTheme){
+    applyTheme(savedTheme);
+  } else {
+    applyTheme(getSystemTheme(), false);
+  }
+
+  if (typeof window.matchMedia === "function"){
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const syncToSystemIfNoOverride = () => {
+      if (!getSavedTheme()) applyTheme(getSystemTheme(), false);
+    };
+
+    if (typeof media.addEventListener === "function"){
+      media.addEventListener("change", syncToSystemIfNoOverride);
+    } else if (typeof media.addListener === "function"){
+      media.addListener(syncToSystemIfNoOverride);
+    }
+  }
 }
 
 
