@@ -12,16 +12,30 @@
       <h1>Simple Word Counter</h1>
       <p class="sub">Counts words, characters, sentences, paragraphs, reading and speaking time, keyword density, and Gunning Fog readability. Everything runs locally in your browser.</p>
     </div>
-    <div class="btnrow">
-      <button id="btnSample" class="primary" type="button">Insert sample</button>
-      <button id="btnCopy" type="button">Copy</button>
-      <button id="btnDownload" type="button">Download .txt</button>
-      <button id="btnClear" type="button">Clear</button>
+
+    <div class="header-controls">
+      <div class="header-controls-top">
+        <div class="theme-switch" title="Toggle light or dark mode">
+          <span class="theme-label" id="themeLabelLight">Light</span>
+          <label class="switch">
+            <input id="themeToggle" type="checkbox" aria-label="Toggle dark mode" />
+            <span class="slider" aria-hidden="true"></span>
+          </label>
+          <span class="theme-label" id="themeLabelDark">Dark</span>
+        </div>
+      </div>
+
+      <div class="btnrow header-actions">
+        <button id="btnSample" class="primary" type="button">Insert sample</button>
+        <button id="btnCopy" type="button">Copy</button>
+        <button id="btnClear" type="button">Clear</button>
+      </div>
     </div>
   </header>
 
-  <main class="wrap">
-    <section class="card">
+
+<main class="wrap">
+    <section class="card editor-card">
       <div class="hd">
         <div class="title">Editor</div>
         <span class="pill" id="autosavePill">Autosave: on</span>
@@ -48,7 +62,7 @@
       </div>
     </section>
 
-    <aside class="card">
+    <aside class="card details-card">
       <div class="hd">
         <div class="title">Details</div>
         <span class="pill" id="fogLabel">Readability</span>
@@ -95,7 +109,7 @@
             <div class="row">
               <div>
                 <div class="k">Gunning Fog Index</div>
-                <div class="v" id="mFog">—</div>
+                <div class="v" id="mFog">N/A</div>
               </div>
               <div class="right">
                 <div class="k">Complex words</div>
@@ -103,7 +117,8 @@
               </div>
             </div>
             <div class="s muted">
-              Formula: <span class="mono">0.4 × (words/sentences + 100×complex/words)</span>
+              <div>Formula: <span class="mono">0.4 × (words/sentences + 100×complex/words)</span></div>
+              <div id="mFogGrade">Grade: N/A • Age: N/A</div>
             </div>
           </div>
         </div>
@@ -147,11 +162,6 @@
       </div>
     </section>
   </main>
-
-  <div class="footer-note">
-    Tip: Save these files together and open <span class="mono">index.html</span>. No server required.
-  </div>
-
-  <script src="app.js"></script>
+<script src="app.js"></script>
 </body>
 </html>

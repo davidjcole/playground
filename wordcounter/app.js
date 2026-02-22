@@ -11,6 +11,22 @@ const STOPWORDS = new Set([
   "been","being","have","has","had","having"
 ]);
 
+function clamp(n, min, max){
+  return Math.max(min, Math.min(max, n));
+}
+
+function fogToGradeAndAge(fog){
+  if (!isFinite(fog) || fog <= 0) return { grade: null, age: null };
+
+  // Fog is commonly interpreted as years of education needed
+  const grade = clamp(Math.round(fog), 1, 20);
+
+  // Rough mapping: Grade 1 is about age 6
+  const age = clamp(grade + 5, 6, 25);
+
+  return { grade, age };
+}
+
 function formatDurationSeconds(totalSeconds){
   totalSeconds = Math.max(0, Math.round(totalSeconds));
   const m = Math.floor(totalSeconds / 60);
@@ -119,11 +135,9 @@ function computeKeywordDensity(words, ignoreStopwords, topN){
 
 // ---------- UI wiring ----------
 const els = {
-  text: document.getElementById("text"),
+  text: document.getElementById("text"),  themeToggle: document.getElementById("themeToggle"),
   btnSample: document.getElementById("btnSample"),
-  btnCopy: document.getElementById("btnCopy"),
-  btnDownload: document.getElementById("btnDownload"),
-  btnClear: document.getElementById("btnClear"),
+  btnCopy: document.getElementById("btnCopy"),  btnClear: document.getElementById("btnClear"),
   optNumbers: document.getElementById("optNumbers"),
   optStopwords: document.getElementById("optStopwords"),
   wpm: document.getElementById("wpm"),
@@ -144,6 +158,7 @@ const els = {
   mWpm: document.getElementById("mWpm"),
   mSpm: document.getElementById("mSpm"),
   mFog: document.getElementById("mFog"),
+  mFogGrade: document.getElementById("mFogGrade"),
   mComplex: document.getElementById("mComplex"),
   fogLabel: document.getElementById("fogLabel"),
   kwBody: document.getElementById("kwBody"),
@@ -151,6 +166,7 @@ const els = {
 };
 
 const STORAGE_KEY = "simple_word_counter_text_v1";
+const THEME_KEY = "simple_word_counter_theme_v1";
 const TOP_KEYWORDS = 15;
 
 function setFogPill(fog){
@@ -241,13 +257,23 @@ function update(){
   els.mSpm.textContent = spm;
 
   if (wordCount === 0){
-    els.mFog.textContent = "—";
+    els.mFog.textContent = "N/A";
     els.mComplex.textContent = "0";
+    els.mFogGrade.textContent = "Grade: N/A • Age: N/A";
     setFogPill(0);
   } else {
-    els.mFog.textContent = (isFinite(fogRes.fog) ? fogRes.fog.toFixed(1) : "—");
+    const fog = isFinite(fogRes.fog) ? fogRes.fog : 0;
+    els.mFog.textContent = fog ? fog.toFixed(1) : "N/A";
     els.mComplex.textContent = fogRes.complex.toLocaleString();
-    setFogPill(fogRes.fog);
+
+    const { grade, age } = fogToGradeAndAge(fog);
+    if (grade == null){
+      els.mFogGrade.textContent = "Grade: N/A • Age: N/A";
+    } else {
+      els.mFogGrade.textContent = `Grade: ${grade} • Age: ${age}+`;
+    }
+
+    setFogPill(fog);
   }
 
   // Keyword density
@@ -290,18 +316,6 @@ els.btnCopy.addEventListener("click", async () => {
   }
 });
 
-els.btnDownload.addEventListener("click", () => {
-  const blob = new Blob([els.text.value], { type: "text/plain;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "text.txt";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-});
-
 els.btnSample.addEventListener("click", () => {
   const sample =
 `Good writing is clear and direct. It uses short sentences when possible, and it avoids unnecessary complexity.
@@ -312,6 +326,11 @@ Try adding longer sentences with many multisyllabic words to see how the Gunning
   els.text.value = sample;
   update();
   els.text.focus();
+});
+
+
+els.themeToggle.addEventListener("change", () => {
+  applyTheme(els.themeToggle.checked ? "dark" : "light");
 });
 
 // Controls
@@ -328,7 +347,29 @@ els.spm.addEventListener("input", () => {
   scheduleUpdate();
 });
 
+
+function applyTheme(theme){
+  const t = theme === "light" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", t);
+
+  const isDark = t === "dark";
+  if (els.themeToggle) els.themeToggle.checked = isDark;
+
+  try { localStorage.setItem(THEME_KEY, t); } catch {}
+}
+
+function initTheme(){
+  let t = "dark";
+  try {
+    const saved = localStorage.getItem(THEME_KEY);
+    if (saved === "light" || saved === "dark") t = saved;
+  } catch {}
+  applyTheme(t);
+}
+
+
 // Init
+initTheme();
 try {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved != null) els.text.value = saved;
