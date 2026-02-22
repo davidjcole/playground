@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Simple Word Counter</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Simple Word Counter</h1>
+      <p class="sub">Counts words, characters, sentences, paragraphs, reading and speaking time, keyword density, and Gunning Fog readability. Everything runs locally in your browser.</p>
+    </div>
+    <div class="btnrow">
+      <button id="btnSample" class="primary" type="button">Insert sample</button>
+      <button id="btnCopy" type="button">Copy</button>
+      <button id="btnDownload" type="button">Download .txt</button>
+      <button id="btnClear" type="button">Clear</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="card">
+      <div class="hd">
+        <div class="title">Editor</div>
+        <span class="pill" id="autosavePill">Autosave: on</span>
+      </div>
+      <div class="bd">
+        <textarea id="text" placeholder="Type or paste your text here..."></textarea>
+
+        <div class="controls">
+          <div class="control">
+            <label><input id="optNumbers" type="checkbox" checked /> Count numbers as words</label>
+            <label><input id="optStopwords" type="checkbox" checked /> Ignore stopwords in keywords</label>
+          </div>
+
+          <div class="control">
+            <div>Reading speed: <span class="mono" id="wpmOut">225</span> WPM</div>
+            <input id="wpm" type="range" min="120" max="350" value="225" />
+          </div>
+
+          <div class="control">
+            <div>Speaking speed: <span class="mono" id="spmOut">150</span> WPM</div>
+            <input id="spm" type="range" min="90" max="220" value="150" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="card">
+      <div class="hd">
+        <div class="title">Details</div>
+        <span class="pill" id="fogLabel">Readability</span>
+      </div>
+      <div class="bd">
+        <div class="grid">
+          <div class="metric">
+            <div class="k">Words</div>
+            <div class="v" id="mWords">0</div>
+            <div class="s muted" id="mUnique">Unique: 0</div>
+          </div>
+
+          <div class="metric">
+            <div class="k">Characters</div>
+            <div class="v" id="mChars">0</div>
+            <div class="s muted">No spaces: <span id="mCharsNoSpaces">0</span></div>
+          </div>
+
+          <div class="metric">
+            <div class="k">Sentences</div>
+            <div class="v" id="mSentences">0</div>
+            <div class="s muted">Avg words/sentence: <span id="mAvgSent">0</span></div>
+          </div>
+
+          <div class="metric">
+            <div class="k">Paragraphs</div>
+            <div class="v" id="mParagraphs">0</div>
+            <div class="s muted">Lines: <span id="mLines">0</span></div>
+          </div>
+
+          <div class="metric">
+            <div class="k">Reading time</div>
+            <div class="v" id="mReadTime">0s</div>
+            <div class="s muted">At <span id="mWpm">225</span> WPM</div>
+          </div>
+
+          <div class="metric">
+            <div class="k">Speaking time</div>
+            <div class="v" id="mSpeakTime">0s</div>
+            <div class="s muted">At <span id="mSpm">150</span> WPM</div>
+          </div>
+
+          <div class="metric full">
+            <div class="row">
+              <div>
+                <div class="k">Gunning Fog Index</div>
+                <div class="v" id="mFog">—</div>
+              </div>
+              <div class="right">
+                <div class="k">Complex words</div>
+                <div class="v small" id="mComplex">0</div>
+              </div>
+            </div>
+            <div class="s muted">
+              Formula: <span class="mono">0.4 × (words/sentences + 100×complex/words)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <section class="card keywords">
+      <div class="hd">
+        <div class="title">Keyword density</div>
+        <span class="pill muted" id="kwMeta">Top 15</span>
+      </div>
+      <div class="bd tight">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:50%;">Keyword</th>
+              <th style="width:20%;">Count</th>
+              <th style="width:30%;">Density</th>
+            </tr>
+          </thead>
+          <tbody id="kwBody">
+            <tr><td class="muted" colspan="3">Type to see keywords…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card notes">
+      <div class="hd">
+        <div class="title">Notes</div>
+        <span class="pill muted">In-browser</span>
+      </div>
+      <div class="bd note">
+        <div>
+          Sentence detection and syllable counting are approximations, so readability is an estimate.
+          For best results, use normal punctuation and avoid lists without periods.
+        </div>
+        <div class="spacer">
+          Autosaves your text to <span class="mono">localStorage</span>. Use Clear to remove it.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="footer-note">
+    Tip: Save these files together and open <span class="mono">index.html</span>. No server required.
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
