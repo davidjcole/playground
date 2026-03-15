@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ActionKit Draft Email Creator</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>ActionKit Draft Email Creator</h1>
+      <p class="subtitle">Create a draft mailing via <code>POST /rest/v1/mailer/</code>.</p>
+      <p class="subtitle">
+        <a href="settings.html">Open Settings</a>
+        <span id="config-status"></span>
+      </p>
+
+      <form id="draft-form" class="card">
+        <fieldset>
+          <legend>Draft Content</legend>
+
+          <label for="subjects">Subjects (one per line)</label>
+          <textarea id="subjects" name="subjects" rows="3" placeholder="Subject A&#10;Subject B" required></textarea>
+
+          <label for="previewText">Preview Text (optional, one per line)</label>
+          <textarea id="previewText" name="previewText" rows="2" placeholder="Preview A&#10;Preview B"></textarea>
+
+          <label for="emailEditor">HTML Body</label>
+          <div class="wysiwyg" aria-label="Email HTML editor">
+            <div class="toolbar" id="editor-toolbar">
+              <button type="button" data-command="bold"><strong>B</strong></button>
+              <button type="button" data-command="italic"><em>I</em></button>
+              <button type="button" data-command="underline"><u>U</u></button>
+              <button type="button" data-command="insertUnorderedList">Bullets</button>
+              <button type="button" data-command="insertOrderedList">Numbers</button>
+              <button type="button" data-command="createLink">Link</button>
+              <button type="button" data-command="removeFormat">Clear</button>
+            </div>
+            <div id="emailEditor" class="editor" contenteditable="true" role="textbox" aria-multiline="true">
+              <p>Hello, world!</p>
+            </div>
+          </div>
+          <textarea id="html" name="html" rows="8" class="visually-hidden" aria-hidden="true"><p>Hello, world!</p></textarea>
+
+          <label for="text">Text Body (optional)</label>
+          <textarea id="text" name="text" rows="6" placeholder="Hello, world!"></textarea>
+        </fieldset>
+
+        <button type="submit" id="submitBtn">Create Draft</button>
+      </form>
+
+      <section class="card result" aria-live="polite">
+        <h2>Result</h2>
+        <pre id="output">No request sent yet.</pre>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

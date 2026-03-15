@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ActionKit Settings</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>ActionKit Settings</h1>
+      <p class="subtitle">Save draft defaults. API credentials are configured on the backend server.</p>
+      <p class="subtitle"><a href="index.html">Back to Draft Creator</a></p>
+
+      <form id="settings-form" class="card">
+        <fieldset>
+          <legend>Draft Defaults</legend>
+
+          <label for="fromline">Fromline Resource Path</label>
+          <input id="fromline" name="fromline" type="text" placeholder="/rest/v1/fromline/1/" required />
+
+          <label for="emailwrapper">Email Wrapper Resource Path (optional)</label>
+          <input id="emailwrapper" name="emailwrapper" type="text" placeholder="/rest/v1/emailwrapper/1/" />
+
+          <label for="submitter">Submitter Resource Path (optional)</label>
+          <input id="submitter" name="submitter" type="text" placeholder="/rest/v1/authuser/1/" />
+        </fieldset>
+
+        <button type="submit">Save Settings</button>
+      </form>
+
+      <form id="server-config-form" class="card">
+        <fieldset>
+          <legend>ActionKit API Connection</legend>
+
+          <label for="serverBaseUrl">Instance Base URL</label>
+          <input id="serverBaseUrl" name="baseUrl" type="url" placeholder="https://your-org.actionkit.com" required />
+
+          <label for="serverUsername">API Username</label>
+          <input id="serverUsername" name="username" type="text" required />
+
+          <label for="serverPassword">API Password</label>
+          <input
+            id="serverPassword"
+            name="password"
+            type="password"
+            placeholder="Leave blank to keep existing password"
+          />
+        </fieldset>
+
+        <button type="submit">Save API Connection</button>
+      </form>
+
+      <section class="card result" aria-live="polite">
+        <h2>Status</h2>
+        <pre id="output">No changes saved yet.</pre>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

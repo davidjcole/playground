@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>350 source code generator settings</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <nav class="top-nav" aria-label="Primary">
+        <a class="nav-link" href="/index.html">Build URLs</a>
+        <a class="nav-link" href="/history.html">History</a>
+        <a class="nav-link" href="/help.html">Help</a>
+        <a class="nav-link nav-link-active" href="/settings.html">Settings</a>
+      </nav>
+
+      <header class="hero">
+        <div class="brand-lockup">
+          <img
+            class="brand-logo"
+            src="https://350.org/wp-content/uploads/2017/05/350-logo-v3-white.svg"
+            alt="350 logo"
+          />
+        </div>
+        <p class="eyebrow">Control visible variables</p>
+        <h1>Settings</h1>
+        <p class="hero-copy">
+          Choose which regions, UTM sources, and UTM media appear in the builder
+          dropdowns.
+        </p>
+      </header>
+
+      <main class="history-layout">
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">Variable manager</p>
+              <h2>Dropdown variables</h2>
+            </div>
+            <div class="button-cluster">
+              <button class="ghost-button" id="reset-defaults" type="button">Reset to workbook defaults</button>
+              <button class="accent-button" id="save-settings" type="button">Save settings</button>
+            </div>
+          </div>
+
+          <p id="settings-status" class="save-status">Loading current settings...</p>
+          <p class="save-status">
+            Add new variables, remove old ones, and save the exact lists that should be
+            shown on the builder page.
+          </p>
+
+          <div class="settings-grid">
+            <section class="settings-card">
+              <div class="settings-card-header">
+                <p class="section-kicker">Regions</p>
+              </div>
+              <div id="regions-options" class="settings-list"></div>
+              <form class="settings-add-form" data-category="regions">
+                <input id="regions-input" type="text" placeholder="Add a new region" />
+                <button class="ghost-button" type="submit">Add</button>
+              </form>
+            </section>
+
+            <section class="settings-card">
+              <div class="settings-card-header">
+                <p class="section-kicker">UTM source</p>
+              </div>
+              <div id="platforms-options" class="settings-list"></div>
+              <form class="settings-add-form" data-category="platforms">
+                <input id="platforms-input" type="text" placeholder="Add a new UTM source" />
+                <button class="ghost-button" type="submit">Add</button>
+              </form>
+            </section>
+
+            <section class="settings-card">
+              <div class="settings-card-header">
+                <p class="section-kicker">UTM medium</p>
+              </div>
+              <div id="mediums-options" class="settings-list"></div>
+              <form class="settings-add-form" data-category="mediums">
+                <input id="mediums-input" type="text" placeholder="Add a new UTM medium" />
+                <button class="ghost-button" type="submit">Add</button>
+              </form>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="./settings.js"></script>
+  </body>
+</html>

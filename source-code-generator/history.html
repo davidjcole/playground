@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>350 source code generator history</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <nav class="top-nav" aria-label="Primary">
+        <a class="nav-link" href="/index.html">Build URLs</a>
+        <a class="nav-link nav-link-active" href="/history.html">History</a>
+        <a class="nav-link" href="/help.html">Help</a>
+        <a class="nav-link" href="/settings.html">Settings</a>
+      </nav>
+
+      <header class="hero">
+        <div class="brand-lockup">
+          <img
+            class="brand-logo"
+            src="https://350.org/wp-content/uploads/2017/05/350-logo-v3-white.svg"
+            alt="350 logo"
+          />
+        </div>
+        <p class="eyebrow">350 source code generator</p>
+        <h1>Previously created URLs</h1>
+        <p class="hero-copy">
+          Browse saved links from the generator, search by campaign or source, and copy
+          any past URL back into your workflow.
+        </p>
+      </header>
+
+      <main class="history-layout">
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">History</p>
+              <h2>Saved URL records</h2>
+            </div>
+            <button class="ghost-button" id="refresh-history" type="button">Refresh</button>
+          </div>
+
+          <label class="history-search">
+            <span>Search saved URLs</span>
+            <input id="history-search" type="search" placeholder="Search by campaign, source, medium, region, or URL" />
+          </label>
+
+          <p id="history-status" class="save-status">Loading saved URLs...</p>
+
+          <div id="history-list" class="history-list"></div>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="./history.js"></script>
+  </body>
+</html>
