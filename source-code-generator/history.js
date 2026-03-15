@@ -7,6 +7,14 @@ const els = {
 
 let records = [];
 
+function getRecordValue(record, ...keys) {
+  for (const key of keys) {
+    const value = record[key];
+    if (value !== undefined && value !== null && value !== "") return value;
+  }
+  return "";
+}
+
 function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -24,15 +32,15 @@ function formatDate(value) {
 function matchesSearch(record, query) {
   if (!query) return true;
   const haystack = [
-    record.region,
-    record.landing_page,
-    record.platform,
-    record.medium,
-    record.tracking_date,
-    record.topic,
-    record.campaign,
-    record.actionkit_source,
-    record.final_url
+    getRecordValue(record, "region"),
+    getRecordValue(record, "landing_page", "landingPage"),
+    getRecordValue(record, "platform"),
+    getRecordValue(record, "medium"),
+    getRecordValue(record, "tracking_date", "trackingDate"),
+    getRecordValue(record, "topic"),
+    getRecordValue(record, "campaign"),
+    getRecordValue(record, "actionkit_source", "actionkitSource"),
+    getRecordValue(record, "final_url", "finalUrl")
   ]
     .join(" ")
     .toLowerCase();
@@ -63,23 +71,23 @@ function renderHistory() {
           <div class="history-card-top">
             <div>
               <p class="mini-label">Created</p>
-              <p class="history-meta">${escapeHtml(formatDate(record.created_at))}</p>
+              <p class="history-meta">${escapeHtml(formatDate(getRecordValue(record, "created_at", "createdAt")))}</p>
             </div>
-            <button class="ghost-button copy-history-url" type="button" data-url="${escapeHtml(record.final_url)}">Copy URL</button>
+            <button class="ghost-button copy-history-url" type="button" data-url="${escapeHtml(getRecordValue(record, "final_url", "finalUrl"))}">Copy URL</button>
           </div>
           <div class="history-tags">
-            <span class="history-tag">Date: ${escapeHtml(record.tracking_date || "-")}</span>
-            <span class="history-tag">Topic: ${escapeHtml(record.topic || "-")}</span>
+            <span class="history-tag">Date: ${escapeHtml(getRecordValue(record, "tracking_date", "trackingDate") || "-")}</span>
+            <span class="history-tag">Topic: ${escapeHtml(getRecordValue(record, "topic") || "-")}</span>
           </div>
-          <p class="history-url">${escapeHtml(record.final_url)}</p>
+          <p class="history-url">${escapeHtml(getRecordValue(record, "final_url", "finalUrl"))}</p>
           <dl class="history-details">
-            <div><dt>Region</dt><dd>${escapeHtml(record.region || "-")}</dd></div>
-            <div><dt>Source</dt><dd>${escapeHtml(record.platform || "-")}</dd></div>
-            <div><dt>Medium</dt><dd>${escapeHtml(record.medium || "-")}</dd></div>
-            <div><dt>Date</dt><dd>${escapeHtml(record.tracking_date || "-")}</dd></div>
-            <div><dt>Topic</dt><dd>${escapeHtml(record.topic || "-")}</dd></div>
-            <div><dt>Campaign</dt><dd>${escapeHtml(record.campaign || "-")}</dd></div>
-            <div><dt>ActionKit source</dt><dd>${escapeHtml(record.actionkit_source || "-")}</dd></div>
+            <div><dt>Region</dt><dd>${escapeHtml(getRecordValue(record, "region") || "-")}</dd></div>
+            <div><dt>Source</dt><dd>${escapeHtml(getRecordValue(record, "platform") || "-")}</dd></div>
+            <div><dt>Medium</dt><dd>${escapeHtml(getRecordValue(record, "medium") || "-")}</dd></div>
+            <div><dt>Date</dt><dd>${escapeHtml(getRecordValue(record, "tracking_date", "trackingDate") || "-")}</dd></div>
+            <div><dt>Topic</dt><dd>${escapeHtml(getRecordValue(record, "topic") || "-")}</dd></div>
+            <div><dt>Campaign</dt><dd>${escapeHtml(getRecordValue(record, "campaign") || "-")}</dd></div>
+            <div><dt>ActionKit source</dt><dd>${escapeHtml(getRecordValue(record, "actionkit_source", "actionkitSource") || "-")}</dd></div>
           </dl>
         </article>
       `
