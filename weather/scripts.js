@@ -3,7 +3,7 @@ async function fetchWeather() {
     const weatherElement = document.getElementById('weather');
 
     if (!location) {
-        weatherElement.innerHTML = `<p>Please enter a location.</p>`;
+        renderWeatherMessage('Please enter a location.');
         return;
     }
 
@@ -15,18 +15,18 @@ async function fetchWeather() {
         const data = await response.json();
 
         const clothesRecommendation = getClothesRecommendation(data.current.temp_c, data.current.condition.text);
-        
-        weatherElement.innerHTML = `
-            <p><strong>Location:</strong> ${data.location.name}, ${data.location.region}, ${data.location.country}</p>
-            <p><strong>Temperature:</strong> ${data.current.temp_c}°C</p>
-            <p><strong>Condition:</strong> ${data.current.condition.text}</p>
-            <p><strong>Wind:</strong> ${data.current.wind_kph} kph, ${data.current.wind_dir}</p>
-            <p><strong>Humidity:</strong> ${data.current.humidity}%</p>
-            <p><strong>Clothing Recommendation:</strong> ${clothesRecommendation}</p>
-        `;
+
+        renderWeatherData(weatherElement, [
+            ['Location', `${data.location.name}, ${data.location.region}, ${data.location.country}`],
+            ['Temperature', `${data.current.temp_c}°C`],
+            ['Condition', data.current.condition.text],
+            ['Wind', `${data.current.wind_kph} kph, ${data.current.wind_dir}`],
+            ['Humidity', `${data.current.humidity}%`],
+            ['Clothing Recommendation', clothesRecommendation]
+        ]);
     } catch (error) {
         console.error('Failed to fetch weather data:', error);
-        document.getElementById('weather').innerHTML = `<p>Error fetching weather data. Please check console for details.</p>`;
+        renderWeatherMessage('Error fetching weather data. Please check console for details.');
     }
 }
 
@@ -51,6 +51,28 @@ function getClothesRecommendation(temperature, condition) {
     }
 
     return recommendation;
+}
+
+function renderWeatherMessage(message) {
+    const weatherElement = document.getElementById('weather');
+    weatherElement.replaceChildren();
+
+    const paragraph = document.createElement('p');
+    paragraph.textContent = message;
+    weatherElement.appendChild(paragraph);
+}
+
+function renderWeatherData(container, rows) {
+    container.replaceChildren();
+
+    for (const [label, value] of rows) {
+        const paragraph = document.createElement('p');
+        const strong = document.createElement('strong');
+        strong.textContent = `${label}: `;
+        paragraph.appendChild(strong);
+        paragraph.appendChild(document.createTextNode(value));
+        container.appendChild(paragraph);
+    }
 }
 
 // Event listener for the button

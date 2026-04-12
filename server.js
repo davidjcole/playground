@@ -6,6 +6,11 @@ const { URL } = require("url");
 const PORT = Number(process.env.PORT) || 3000;
 const ROOT = __dirname;
 const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
+const WEATHER_CACHE_TTL_MS = 5 * 60 * 1000;
+const WEATHER_RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const WEATHER_RATE_LIMIT_MAX = 20;
+const weatherCache = new Map();
+const weatherRateLimits = new Map();
 
 const MIME_TYPES = {
   ".css": "text/css; charset=utf-8",
@@ -23,7 +28,10 @@ const MIME_TYPES = {
 };
 
 function sendJson(res, statusCode, payload) {
-  res.writeHead(statusCode, { "Content-Type": "application/json; charset=utf-8" });
+  res.writeHead(statusCode, {
+    "Content-Type": "application/json; charset=utf-8",
+    "Cache-Control": "no-store"
+  });
   res.end(JSON.stringify(payload));
 }
 
@@ -47,12 +55,92 @@ function sendFile(res, filePath) {
       return;
     }
 
-    res.writeHead(200, {
+    res.writeHead(200, buildSecurityHeaders({
       "Content-Type": contentType,
       "Cache-Control": "no-store"
-    });
+    }));
     res.end(data);
   });
+}
+
+function buildSecurityHeaders(headers = {}) {
+  return {
+    "Cache-Control": "no-store",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Permissions-Policy": "geolocation=(), microphone=(), camera=()",
+    "Content-Security-Policy": [
+      "default-src 'self'",
+      "img-src 'self' data: https:",
+      "style-src 'self' 'unsafe-inline' https:",
+      "script-src 'self' 'unsafe-inline' https:",
+      "font-src 'self' data: https:",
+      "connect-src 'self' https:",
+      "media-src 'self' https:",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "frame-ancestors 'none'"
+    ].join("; "),
+    ...headers
+  };
+}
+
+function getClientIp(req) {
+  const forwardedFor = req.headers["x-forwarded-for"];
+  if (typeof forwardedFor === "string" && forwardedFor.trim()) {
+    return forwardedFor.split(",")[0].trim();
+  }
+
+  return req.socket?.remoteAddress || "unknown";
+}
+
+function pruneExpiredEntries(store, now) {
+  for (const [key, value] of store.entries()) {
+    if (value.expiresAt <= now) {
+      store.delete(key);
+    }
+  }
+}
+
+function validateWeatherLocation(location) {
+  const normalized = String(location || "").trim().replace(/\s+/g, " ");
+  if (!normalized) {
+    return { ok: false, error: "Missing location query parameter" };
+  }
+  if (normalized.length > 100) {
+    return { ok: false, error: "Location must be 100 characters or fewer" };
+  }
+  if (!/^[\p{L}\p{N}\s,.'-]+$/u.test(normalized)) {
+    return { ok: false, error: "Location contains unsupported characters" };
+  }
+
+  return { ok: true, value: normalized };
+}
+
+function checkWeatherRateLimit(req) {
+  const now = Date.now();
+  pruneExpiredEntries(weatherRateLimits, now);
+
+  const ip = getClientIp(req);
+  const current = weatherRateLimits.get(ip);
+  if (!current || current.expiresAt <= now) {
+    weatherRateLimits.set(ip, {
+      count: 1,
+      expiresAt: now + WEATHER_RATE_LIMIT_WINDOW_MS
+    });
+    return { allowed: true };
+  }
+
+  current.count += 1;
+  if (current.count > WEATHER_RATE_LIMIT_MAX) {
+    return {
+      allowed: false,
+      retryAfterSeconds: Math.max(1, Math.ceil((current.expiresAt - now) / 1000))
+    };
+  }
+
+  return { allowed: true };
 }
 
 function resolveStaticPath(requestPath) {
@@ -78,16 +166,41 @@ function resolveStaticPath(requestPath) {
   };
 }
 
-async function handleWeatherProxy(res, url) {
-  const location = url.searchParams.get("q");
-
-  if (!location) {
-    sendJson(res, 400, { error: "Missing location query parameter" });
+async function handleWeatherProxy(req, res, url) {
+  const rateLimit = checkWeatherRateLimit(req);
+  if (!rateLimit.allowed) {
+    res.writeHead(429, buildSecurityHeaders({
+      "Content-Type": "application/json; charset=utf-8",
+      "Retry-After": String(rateLimit.retryAfterSeconds)
+    }));
+    res.end(JSON.stringify({ error: "Too many weather requests. Please try again shortly." }));
     return;
   }
 
+  const validation = validateWeatherLocation(url.searchParams.get("q"));
+  if (!validation.ok) {
+    sendJson(res, 400, { error: validation.error });
+    return;
+  }
+
+  const location = validation.value;
+
   if (!WEATHER_API_KEY) {
     sendJson(res, 500, { error: "Weather API key is not configured" });
+    return;
+  }
+
+  const cacheKey = location.toLowerCase();
+  const now = Date.now();
+  pruneExpiredEntries(weatherCache, now);
+
+  const cached = weatherCache.get(cacheKey);
+  if (cached && cached.expiresAt > now) {
+    res.writeHead(200, buildSecurityHeaders({
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "private, max-age=300"
+    }));
+    res.end(cached.body);
     return;
   }
 
@@ -100,9 +213,17 @@ async function handleWeatherProxy(res, url) {
     const upstreamResponse = await fetch(upstreamUrl);
     const body = await upstreamResponse.text();
 
-    res.writeHead(upstreamResponse.status, {
-      "Content-Type": upstreamResponse.headers.get("content-type") || "application/json; charset=utf-8"
-    });
+    if (upstreamResponse.ok) {
+      weatherCache.set(cacheKey, {
+        body,
+        expiresAt: now + WEATHER_CACHE_TTL_MS
+      });
+    }
+
+    res.writeHead(upstreamResponse.status, buildSecurityHeaders({
+      "Content-Type": upstreamResponse.headers.get("content-type") || "application/json; charset=utf-8",
+      "Cache-Control": upstreamResponse.ok ? "private, max-age=300" : "no-store"
+    }));
     res.end(body);
   } catch (error) {
     sendJson(res, 502, { error: "Failed to fetch weather data" });
@@ -113,7 +234,7 @@ const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
 
   if (url.pathname === "/api/weather") {
-    await handleWeatherProxy(res, url);
+    await handleWeatherProxy(req, res, url);
     return;
   }
 
