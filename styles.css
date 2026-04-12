@@ -22,14 +22,25 @@ a {
 
 .site-nav {
     display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0;
+}
+
+.site-nav-left {
+    display: flex;
     gap: 24px;
     flex-wrap: wrap;
-    padding: 20px 0;
 }
 
 .site-nav a {
     color: #333333;
     text-decoration: none;
+}
+
+.site-nav-right {
+    margin-left: auto;
+    text-align: right;
 }
 
 .site-nav a:hover,
@@ -149,6 +160,17 @@ a {
     }
 
     .site-nav {
+        align-items: flex-start;
+        flex-direction: column;
         gap: 14px;
+    }
+
+    .site-nav-left {
+        gap: 14px;
+    }
+
+    .site-nav-right {
+        margin-left: 0;
+        text-align: left;
     }
 }
