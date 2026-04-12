@@ -1,42 +1,107 @@
+:root {
+    --bg-top: #f7f1e8;
+    --bg-bottom: #dbe7f3;
+    --text: #1d2a36;
+    --muted: #576574;
+    --card: rgba(255, 255, 255, 0.82);
+    --card-border: rgba(29, 42, 54, 0.08);
+    --shadow: 0 18px 40px rgba(29, 42, 54, 0.12);
+    --accent: #0f766e;
+    --accent-strong: #0b5e58;
+}
+
+* {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: Arial, sans-serif;
     margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
+    min-height: 100vh;
+    font-family: Georgia, "Times New Roman", serif;
+    color: var(--text);
+    background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.65), transparent 30%),
+        linear-gradient(160deg, var(--bg-top), var(--bg-bottom));
 }
 
 .container {
-    max-width: 800px;
+    width: min(1100px, calc(100% - 32px));
     margin: 0 auto;
-    padding: 20px;
+    padding: 56px 0 72px;
 }
 
-h1 {
-    color: #333;
+.hero {
     text-align: center;
+    margin-bottom: 40px;
 }
 
-p {
-    color: #666;
-    text-align: center;
+.eyebrow {
+    margin: 0 0 12px;
+    color: var(--accent);
+    font-size: 0.85rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
 }
 
-img {
+.hero h1 {
+    margin: 0;
+    font-size: clamp(2.4rem, 6vw, 4.5rem);
+    line-height: 0.95;
+}
+
+.intro {
+    max-width: 720px;
+    margin: 18px auto 0;
+    color: var(--muted);
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.apps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 18px;
+}
+
+.app-card {
     display: block;
-    margin: 0 auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 100%;
-}
-
-a {
-    display: block;
-    color: #007bff;
+    padding: 24px;
+    border: 1px solid var(--card-border);
+    border-radius: 18px;
+    background: var(--card);
+    box-shadow: var(--shadow);
+    color: inherit;
     text-decoration: none;
-    text-align: center;
-    margin-top: 20px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    backdrop-filter: blur(10px);
 }
 
-a:hover {
-    text-decoration: underline;
+.app-card:hover,
+.app-card:focus-visible {
+    transform: translateY(-4px);
+    box-shadow: 0 24px 48px rgba(29, 42, 54, 0.18);
+    border-color: rgba(15, 118, 110, 0.35);
+    outline: none;
+}
+
+.app-card h2 {
+    margin: 0 0 10px;
+    font-size: 1.4rem;
+}
+
+.app-card p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.55;
+}
+
+@media (max-width: 640px) {
+    .container {
+        width: min(100% - 24px, 1100px);
+        padding: 40px 0 56px;
+    }
+
+    .app-card {
+        padding: 20px;
+    }
 }
