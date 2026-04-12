@@ -1,5 +1,6 @@
-// Public holidays data for 2024, 2025, and 2026
+// Public holidays data for England and Wales, 2024 to 2027
 const publicHolidays = [
+    { date: "2024-01-01", name: "New Year’s Day" },
     { date: "2024-05-06", name: "Early May bank holiday" },
     { date: "2024-05-27", name: "Spring bank holiday" },
     { date: "2024-08-26", name: "Summer bank holiday" },
@@ -20,7 +21,15 @@ const publicHolidays = [
     { date: "2026-05-25", name: "Spring bank holiday" },
     { date: "2026-08-31", name: "Summer bank holiday" },
     { date: "2026-12-25", name: "Christmas Day" },
-    { date: "2026-12-28", name: "Boxing Day (substitute day)" }
+    { date: "2026-12-28", name: "Boxing Day (substitute day)" },
+    { date: "2027-01-01", name: "New Year’s Day" },
+    { date: "2027-03-26", name: "Good Friday" },
+    { date: "2027-03-29", name: "Easter Monday" },
+    { date: "2027-05-03", name: "Early May bank holiday" },
+    { date: "2027-05-31", name: "Spring bank holiday" },
+    { date: "2027-08-30", name: "Summer bank holiday" },
+    { date: "2027-12-27", name: "Christmas Day (substitute day)" },
+    { date: "2027-12-28", name: "Boxing Day (substitute day)" }
 ];
 
 const REGULAR_DAY_COST = 18;
