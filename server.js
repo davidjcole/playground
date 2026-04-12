@@ -27,6 +27,11 @@ function sendJson(res, statusCode, payload) {
   res.end(JSON.stringify(payload));
 }
 
+function sendRedirect(res, location) {
+  res.writeHead(301, { Location: location });
+  res.end();
+}
+
 function sendFile(res, filePath) {
   const ext = path.extname(filePath).toLowerCase();
   const contentType = MIME_TYPES[ext] || "application/octet-stream";
@@ -50,18 +55,23 @@ function sendFile(res, filePath) {
 function resolveStaticPath(requestPath) {
   const decodedPath = decodeURIComponent(requestPath);
   const safePath = path.normalize(decodedPath).replace(/^(\.\.[/\\])+/, "");
-  const relativePath = safePath === "/" ? "/index.html" : safePath;
-  const fullPath = path.join(ROOT, relativePath);
+  const fullPath = path.join(ROOT, safePath);
 
   if (!fullPath.startsWith(ROOT)) {
     return null;
   }
 
   if (fs.existsSync(fullPath) && fs.statSync(fullPath).isDirectory()) {
-    return path.join(fullPath, "index.html");
+    return {
+      isDirectory: true,
+      filePath: path.join(fullPath, "index.html")
+    };
   }
 
-  return fullPath;
+  return {
+    isDirectory: false,
+    filePath: safePath === "/" ? path.join(ROOT, "index.html") : fullPath
+  };
 }
 
 async function handleWeatherProxy(res, url) {
@@ -103,13 +113,19 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  const filePath = resolveStaticPath(url.pathname);
-  if (!filePath) {
+  const resolvedPath = resolveStaticPath(url.pathname);
+  if (!resolvedPath) {
     sendJson(res, 403, { error: "Forbidden" });
     return;
   }
 
-  sendFile(res, filePath);
+  if (resolvedPath.isDirectory && !url.pathname.endsWith("/")) {
+    const query = url.search || "";
+    sendRedirect(res, `${url.pathname}/${query}`);
+    return;
+  }
+
+  sendFile(res, resolvedPath.filePath);
 });
 
 server.listen(PORT, () => {
