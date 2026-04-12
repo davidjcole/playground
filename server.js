@@ -73,14 +73,15 @@ function buildSecurityHeaders(headers = {}) {
     "Content-Security-Policy": [
       "default-src 'self'",
       "img-src 'self' data: https:",
-      "style-src 'self' 'unsafe-inline' https:",
-      "script-src 'self' 'unsafe-inline' https:",
-      "font-src 'self' data: https:",
-      "connect-src 'self' https:",
-      "media-src 'self' https:",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "script-src 'self'",
+      "font-src 'self' data: https://fonts.gstatic.com",
+      "connect-src 'self' https://api.weatherapi.com https://mapbox-event-finder.vercel.app",
+      "media-src 'self' https://cdn.freesound.org",
       "object-src 'none'",
       "base-uri 'self'",
-      "frame-ancestors 'none'"
+      "frame-ancestors 'none'",
+      "form-action 'self'"
     ].join("; "),
     ...headers
   };
