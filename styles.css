@@ -150,6 +150,18 @@ a {
     color: #555555;
 }
 
+.site-footer {
+    padding: 24px 0 40px;
+    background-color: #f4f4f9;
+    border-top: 1px solid #dddddd;
+}
+
+.site-footer p {
+    margin: 0;
+    color: #666666;
+    font-size: 0.95rem;
+}
+
 @media (max-width: 640px) {
     .container {
         width: min(100% - 24px, 1100px);
