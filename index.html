@@ -3,57 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Playground</title>
+    <title>Thinking Systems Playground</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <main class="container">
+    <header class="site-header">
+        <div class="shell nav">
+            <a class="brand" href="/">Thinking Systems</a>
+            <nav class="top-nav" aria-label="Primary">
+                <a href="https://thinkingsystems.co.uk/">Main Site</a>
+                <a href="#applications">Applications</a>
+                <a href="https://thinkingsystems.co.uk/contact/">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
         <section class="hero">
-            <p class="eyebrow">thinking systems playground</p>
-            <h1>Experiments, tools, and useful little web apps</h1>
-            <p class="intro">A home for small browser-based ideas, prototypes, and practical utilities.</p>
+            <div class="shell hero-grid">
+                <div class="hero-copy">
+                    <p class="kicker">Thinking Systems Playground</p>
+                    <h1>Useful experiments and working prototypes from the Thinking Systems studio.</h1>
+                    <p class="lead">This space collects practical tools, interface experiments, and small web applications built alongside client and product work.</p>
+                    <div class="hero-actions">
+                        <a class="button button-primary" href="#applications">Browse applications</a>
+                        <a class="button button-secondary" href="https://thinkingsystems.co.uk/">Visit thinkingsystems.co.uk</a>
+                    </div>
+                </div>
+
+                <aside class="hero-panel">
+                    <p class="panel-label">About this space</p>
+                    <p>Designed as a lightweight gateway for experiments, utilities, and prototypes that sit adjacent to the main Thinking Systems website.</p>
+                    <p>Hosted at <a href="https://playground.thinkingsystems.co.uk/">playground.thinkingsystems.co.uk</a>.</p>
+                </aside>
+            </div>
         </section>
 
-        <section class="apps" aria-label="Applications">
-            <a class="app-card" href="/readability/">
-                <h2>Readability</h2>
-                <p>Calculate Gunning Fog readability scores for a block of text.</p>
-            </a>
+        <section class="section">
+            <div class="shell intro-grid">
+                <div>
+                    <p class="section-label">What this is</p>
+                    <h2>A companion space for digital tools and rapid ideas.</h2>
+                </div>
+                <p class="section-copy">The main Thinking Systems site focuses on services, case studies, and contact. This playground is a more hands-on companion: a place for prototypes, internal tools, and public-facing experiments that are still useful on their own.</p>
+            </div>
+        </section>
 
-            <a class="app-card" href="/wordcounter/">
-                <h2>Word Counter</h2>
-                <p>Count words, characters, reading time, keyword density, and more.</p>
-            </a>
+        <section class="section section-soft" id="applications">
+            <div class="shell">
+                <p class="section-label">Applications</p>
+                <div class="section-heading">
+                    <h2>Current playground tools</h2>
+                    <p>Each application runs directly in the browser, with a small server-side proxy used where secrets need to stay off the client.</p>
+                </div>
 
-            <a class="app-card" href="/weather/">
-                <h2>Weather</h2>
-                <p>Look up the current weather and get a simple clothing recommendation.</p>
-            </a>
+                <div class="apps-grid">
+                    <a class="app-card" href="/wordcounter/">
+                        <h3>Word Counter</h3>
+                        <p>Word count, readability, keyword density, and reading-time analysis in one tool.</p>
+                    </a>
 
-            <a class="app-card" href="/zuzu-booker/">
-                <h2>Zuzu Booker</h2>
-                <p>Estimate booking days and costs, including public holiday pricing.</p>
-            </a>
+                    <a class="app-card" href="/readability/">
+                        <h3>Readability Calculator</h3>
+                        <p>A focused Gunning Fog calculator for checking how difficult a text is to read.</p>
+                    </a>
 
-            <a class="app-card" href="/prompt-examples/">
-                <h2>Prompt Examples</h2>
-                <p>Browse a prompt library of examples and categories.</p>
-            </a>
+                    <a class="app-card" href="/weather/">
+                        <h3>Weather Lookup</h3>
+                        <p>Current conditions with a simple clothing recommendation powered via a server-side proxy.</p>
+                    </a>
 
-            <a class="app-card" href="/drawtheline/">
-                <h2>Draw The Line</h2>
-                <p>Explore the draw-the-line tool and its interactive interface.</p>
-            </a>
+                    <a class="app-card" href="/zuzu-booker/">
+                        <h3>Zuzu Booker</h3>
+                        <p>Booking and holiday-aware cost calculator for date-based planning.</p>
+                    </a>
 
-            <a class="app-card" href="/recycle/">
-                <h2>Recycle</h2>
-                <p>Open the recycling-related experiment in this workspace.</p>
-            </a>
+                    <a class="app-card" href="/prompt-examples/">
+                        <h3>Prompt Examples</h3>
+                        <p>A browsable prompt library for experiments, reference, and inspiration.</p>
+                    </a>
 
-            <a class="app-card" href="/jokes/">
-                <h2>Jokes</h2>
-                <p>Generate a quick Tommy Cooper-style joke for a short laugh.</p>
-            </a>
+                    <a class="app-card" href="/drawtheline/">
+                        <h3>Draw The Line</h3>
+                        <p>An interactive experiment exploring categories, events, and threshold-based inputs.</p>
+                    </a>
+
+                    <a class="app-card" href="/recycle/">
+                        <h3>Recycle</h3>
+                        <p>A standalone playground project within the broader collection of tests and ideas.</p>
+                    </a>
+
+                    <a class="app-card" href="/jokes/">
+                        <h3>Jokes</h3>
+                        <p>A lightweight joke generator built as a small creative browser experiment.</p>
+                    </a>
+                </div>
+            </div>
         </section>
     </main>
 </body>
