@@ -1,0 +1,12 @@
+{
+  "name": "playground",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Static playground site with a small Railway-friendly proxy server",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

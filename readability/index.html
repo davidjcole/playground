@@ -52,6 +52,9 @@ function countSyllables(word) {
 function calculateGunningFog(text) {
     const sentences = text.match(/[^\.!\?]+[\.!\?]+["'\)\]]*|.+$/g) || [];
     const words = text.match(/\w+/g) || [];
+    if (words.length === 0 || sentences.length === 0) {
+        return null;
+    }
     let complexWords = 0;
 
     words.forEach(word => {
@@ -69,7 +72,16 @@ function calculateGunningFog(text) {
 
 function displayGunningFog() {
     const text = document.getElementById("textInput").value;
-    const index = parseFloat(calculateGunningFog(text));
+    const rawIndex = calculateGunningFog(text);
+
+    if (rawIndex === null) {
+        document.getElementById("result").textContent = "Gunning Fog Index: N/A";
+        document.getElementById("description").textContent = "Enter some text to calculate readability.";
+        document.getElementById("educationLevel").textContent = "Education Level: N/A";
+        return;
+    }
+
+    const index = parseFloat(rawIndex);
     const result = "Gunning Fog Index: " + index;
     let description = "";
     let educationLevel = "";

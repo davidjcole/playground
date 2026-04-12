@@ -1,19 +1,19 @@
-// script.js
-// Function to fetch weather data based on the user's input
 async function fetchWeather() {
-    const apiKey = 'dfe297f009fd4e35b8294540241105'; // Replace 'YOUR_API_KEY' with your actual API key from WeatherAPI.com
-    const location = document.getElementById('locationInput').value;
-    const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${encodeURIComponent(location)}&aqi=no`;
+    const location = document.getElementById('locationInput').value.trim();
+    const weatherElement = document.getElementById('weather');
+
+    if (!location) {
+        weatherElement.innerHTML = `<p>Please enter a location.</p>`;
+        return;
+    }
 
     try {
-        const response = await fetch(url);
+        const response = await fetch(`/api/weather?q=${encodeURIComponent(location)}`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
 
-        // Display weather information
-        const weatherElement = document.getElementById('weather');
         const clothesRecommendation = getClothesRecommendation(data.current.temp_c, data.current.condition.text);
         
         weatherElement.innerHTML = `
@@ -31,7 +31,7 @@ async function fetchWeather() {
 }
 
 function getClothesRecommendation(temperature, condition) {
-    // Basic recommendations based on temperature
+    const normalizedCondition = condition.toLowerCase();
     let recommendation = '';
     if (temperature > 25) {
         recommendation = 'Wear light clothing such as a T-shirt and shorts.';
@@ -43,11 +43,10 @@ function getClothesRecommendation(temperature, condition) {
         recommendation = 'Wear a warm coat, hat, and gloves.';
     }
 
-    // Additional recommendations based on weather condition
-    if (condition.includes('rain')) {
+    if (normalizedCondition.includes('rain')) {
         recommendation += ' Bring an umbrella or wear a waterproof jacket.';
     }
-    if (condition.includes('snow')) {
+    if (normalizedCondition.includes('snow')) {
         recommendation += ' Make sure to wear boots and heavy winter clothing.';
     }
 

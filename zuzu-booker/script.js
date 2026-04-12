@@ -29,6 +29,7 @@ const PUBLIC_HOLIDAY_DAY_COST = 36;
 function calculateDays() {
     const startDateInput = document.getElementById('start-date');
     const endDateInput = document.getElementById('end-date');
+    const outputDiv = document.getElementById('output');
 
     const startDate = new Date(startDateInput.value);
     const endDate = new Date(endDateInput.value);
@@ -38,12 +39,17 @@ function calculateDays() {
         return;
     }
 
+    if (endDate < startDate) {
+        outputDiv.innerHTML = "End date must be after the start date.";
+        return;
+    }
+
     const start = startDate.getTime();
-    const end = endDate.getTime() + (24 * 60 * 60 * 1000); // Adjust end date to include the entire end day
+    const inclusiveEndDate = new Date(endDate.getTime() + (24 * 60 * 60 * 1000));
+    const end = inclusiveEndDate.getTime(); // Adjust end date to include the entire end day
     const timeDiff = end - start;
     const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24)); // Use Math.ceil to round up to include the end day
 
-    const outputDiv = document.getElementById('output');
     let holidaysCount = 0;
     let regularDaysCount = 0;
     let totalCost = 0;
@@ -56,7 +62,7 @@ function calculateDays() {
         // Check if any dates in the range are public holidays
         for (let i = start; i < end; i += 86400000) {
             const currentDate = new Date(i);
-            const currentDateStr = currentDate.toISOString().slice(0, 10);
+            const currentDateStr = formatIsoLocalDate(currentDate);
 
             // Check if currentDateStr is a public holiday
             const isHoliday = publicHolidays.find(holiday => holiday.date === currentDateStr);
@@ -98,7 +104,7 @@ function calculateDays() {
         const addToCalendarButton = document.createElement('button');
         addToCalendarButton.textContent = 'Add to Calendar';
         addToCalendarButton.onclick = function() {
-            const eventUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&dates=${formatGoogleCalendarDate(startDate)}/${formatGoogleCalendarDate(end)}&text=Zuzu%20Booking&ctz=UTC&details=Details%20about%20the%20booking%20go%20here`;
+            const eventUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&dates=${formatGoogleCalendarDate(startDate)}/${formatGoogleCalendarDate(inclusiveEndDate)}&text=Zuzu%20Booking&ctz=UTC&details=Details%20about%20the%20booking%20go%20here`;
             window.open(eventUrl, '_blank');
         };
         outputDiv.appendChild(addToCalendarButton);
@@ -117,4 +123,11 @@ function formatGoogleCalendarDate(date) {
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const day = date.getDate().toString().padStart(2, '0');
     return `${year}${month}${day}`;
+}
+
+function formatIsoLocalDate(date) {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
 }
