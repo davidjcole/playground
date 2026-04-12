@@ -55,7 +55,8 @@ function sendFile(res, filePath) {
 function resolveStaticPath(requestPath) {
   const decodedPath = decodeURIComponent(requestPath);
   const safePath = path.normalize(decodedPath).replace(/^(\.\.[/\\])+/, "");
-  const fullPath = path.join(ROOT, safePath);
+  const relativePath = safePath.replace(/^[/\\]+/, "");
+  const fullPath = path.join(ROOT, relativePath);
 
   if (!fullPath.startsWith(ROOT)) {
     return null;
@@ -70,7 +71,7 @@ function resolveStaticPath(requestPath) {
 
   return {
     isDirectory: false,
-    filePath: safePath === "/" ? path.join(ROOT, "index.html") : fullPath
+    filePath: relativePath === "" ? path.join(ROOT, "index.html") : fullPath
   };
 }
 
