@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Percentage Calculator</title>
+    <link rel="icon" type="image/x-icon" href="https://thinkingsystems.co.uk/assets/favicon.ico">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <main class="page">
+        <header class="hero">
+            <p class="eyebrow">Playground Tool</p>
+            <h1>Percentage Calculator</h1>
+            <p class="intro">A simple percentage calculator for common percentage, ratio, and increase or decrease calculations.</p>
+        </header>
+
+        <section class="calculator-grid">
+            <form class="card" id="percentOfForm">
+                <h2>What is % of ?</h2>
+                <div class="equation">
+                    <input id="percentOfPercent" type="number" step="any" placeholder="25" aria-label="Percentage">
+                    <span>% of</span>
+                    <input id="percentOfBase" type="number" step="any" placeholder="200" aria-label="Base number">
+                </div>
+                <button type="submit">Calculate</button>
+                <p class="result" id="percentOfResult">Enter values to calculate.</p>
+            </form>
+
+            <form class="card" id="whatPercentForm">
+                <h2>% is what percent of ?</h2>
+                <div class="equation">
+                    <input id="whatPercentPart" type="number" step="any" placeholder="50" aria-label="Part number">
+                    <span>is what percent of</span>
+                    <input id="whatPercentWhole" type="number" step="any" placeholder="200" aria-label="Whole number">
+                </div>
+                <button type="submit">Calculate</button>
+                <p class="result" id="whatPercentResult">Enter values to calculate.</p>
+            </form>
+
+            <form class="card" id="changeForm">
+                <h2>Percentage increase or decrease</h2>
+                <div class="equation">
+                    <span>From</span>
+                    <input id="changeStart" type="number" step="any" placeholder="120" aria-label="Starting value">
+                    <span>to</span>
+                    <input id="changeEnd" type="number" step="any" placeholder="150" aria-label="Ending value">
+                </div>
+                <button type="submit">Calculate</button>
+                <p class="result" id="changeResult">Enter values to calculate.</p>
+            </form>
+        </section>
+
+        <section class="notes">
+            <h2>Formulas</h2>
+            <ul>
+                <li><strong>What is X% of Y?</strong> <code>(X ÷ 100) × Y</code></li>
+                <li><strong>X is what percent of Y?</strong> <code>(X ÷ Y) × 100</code></li>
+                <li><strong>Percentage increase or decrease</strong> <code>((new − old) ÷ old) × 100</code></li>
+            </ul>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
