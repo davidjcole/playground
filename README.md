@@ -13,6 +13,7 @@ Legacy GitHub Pages URL:
 This repository contains a set of lightweight HTML, CSS, and JavaScript mini-projects, including:
 
 - `index.html` and `styles.css`: landing page for the playground
+- `percentage-calculator/`: a simple percentage calculator for common percentage and change calculations
 - `readability/`: a Gunning Fog Index readability calculator
 - `wordcounter/`: a richer word counter with readability and keyword density metrics
 - `weather/`: a weather lookup tool with clothing suggestions
