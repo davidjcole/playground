@@ -32,8 +32,9 @@ const publicHolidays = [
     { date: "2027-12-28", name: "Boxing Day (substitute day)" }
 ];
 
-const REGULAR_DAY_COST = 18;
-const PUBLIC_HOLIDAY_DAY_COST = 36;
+const REGULAR_DAY_COST = 20;
+const PUBLIC_HOLIDAY_DAY_COST = 40;
+const CHRISTMAS_PERIOD_EXTRA_COST = 10;
 
 function calculateDays() {
     const startDateInput = document.getElementById('start-date');
@@ -61,6 +62,7 @@ function calculateDays() {
 
     let holidaysCount = 0;
     let regularDaysCount = 0;
+    let christmasPeriodCount = 0;
     let totalCost = 0;
 
     if (daysDiff < 0) {
@@ -75,6 +77,7 @@ function calculateDays() {
 
             // Check if currentDateStr is a public holiday
             const isHoliday = publicHolidays.find(holiday => holiday.date === currentDateStr);
+            const isChristmasPeriodDay = isChristmasPeriod(currentDate);
             if (isHoliday) {
                 holidaysCount++;
                 totalCost += PUBLIC_HOLIDAY_DAY_COST;
@@ -82,6 +85,11 @@ function calculateDays() {
             } else {
                 regularDaysCount++;
                 totalCost += REGULAR_DAY_COST;
+            }
+
+            if (isChristmasPeriodDay) {
+                christmasPeriodCount++;
+                totalCost += CHRISTMAS_PERIOD_EXTRA_COST;
             }
         }
 
@@ -91,7 +99,7 @@ function calculateDays() {
             message += `Total public holidays in the selected date range: ${holidaysCount}`;
         }
 
-        message += `<br><br><b>Breakdown of cost:</b> <br> - Regular days (${regularDaysCount} days) at £${REGULAR_DAY_COST} per day <br> - Public holidays (${holidaysCount} days) at £${PUBLIC_HOLIDAY_DAY_COST} per day <br> <b>Total Cost: £${totalCost}</b>`;
+        message += `<br><br><b>Breakdown of cost:</b> <br> - Regular days (${regularDaysCount} days) at £${REGULAR_DAY_COST} per day <br> - Public holidays (${holidaysCount} days) at £${PUBLIC_HOLIDAY_DAY_COST} per day <br> - Christmas period surcharge (${christmasPeriodCount} days) at £${CHRISTMAS_PERIOD_EXTRA_COST} per day <br> <b>Total Cost: £${totalCost}</b>`;
 
         outputDiv.innerHTML = message;
 
@@ -139,6 +147,13 @@ function formatIsoLocalDate(date) {
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const day = date.getDate().toString().padStart(2, '0');
     return `${year}-${month}-${day}`;
+}
+
+function isChristmasPeriod(date) {
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+
+    return (month === 12 && day >= 23) || (month === 1 && day <= 4);
 }
 
 document.getElementById('submit-booking').addEventListener('click', calculateDays);
