@@ -114,6 +114,25 @@ button:focus-visible {
     line-height: 1.6;
 }
 
+.result-line {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.copy-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border-radius: 6px;
+    font-size: 1rem;
+    line-height: 1;
+}
+
 .notes {
     margin-top: 24px;
 }
