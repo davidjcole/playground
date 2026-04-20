@@ -1,5 +1,14 @@
 function toNumber(value) {
-    const parsed = Number(value);
+    const normalized = String(value)
+        .replace(/,/g, "")
+        .replace(/\s+/g, "")
+        .trim();
+
+    if (normalized === "") {
+        return null;
+    }
+
+    const parsed = Number(normalized);
     return Number.isFinite(parsed) ? parsed : null;
 }
 

@@ -19,9 +19,9 @@
             <form class="card" id="percentOfForm">
                 <h2>What is % of ?</h2>
                 <div class="equation">
-                    <input id="percentOfPercent" type="number" step="any" placeholder="25" aria-label="Percentage">
+                    <input id="percentOfPercent" type="text" inputmode="decimal" placeholder="25" aria-label="Percentage">
                     <span>% of</span>
-                    <input id="percentOfBase" type="number" step="any" placeholder="200" aria-label="Base number">
+                    <input id="percentOfBase" type="text" inputmode="decimal" placeholder="200" aria-label="Base number">
                 </div>
                 <button type="submit">Calculate</button>
                 <p class="result" id="percentOfResult">Enter values to calculate.</p>
@@ -30,9 +30,9 @@
             <form class="card" id="whatPercentForm">
                 <h2>% is what percent of ?</h2>
                 <div class="equation">
-                    <input id="whatPercentPart" type="number" step="any" placeholder="50" aria-label="Part number">
+                    <input id="whatPercentPart" type="text" inputmode="decimal" placeholder="50" aria-label="Part number">
                     <span>is what percent of</span>
-                    <input id="whatPercentWhole" type="number" step="any" placeholder="200" aria-label="Whole number">
+                    <input id="whatPercentWhole" type="text" inputmode="decimal" placeholder="200" aria-label="Whole number">
                 </div>
                 <button type="submit">Calculate</button>
                 <p class="result" id="whatPercentResult">Enter values to calculate.</p>
@@ -42,9 +42,9 @@
                 <h2>Percentage increase or decrease</h2>
                 <div class="equation">
                     <span>From</span>
-                    <input id="changeStart" type="number" step="any" placeholder="120" aria-label="Starting value">
+                    <input id="changeStart" type="text" inputmode="decimal" placeholder="120" aria-label="Starting value">
                     <span>to</span>
-                    <input id="changeEnd" type="number" step="any" placeholder="150" aria-label="Ending value">
+                    <input id="changeEnd" type="text" inputmode="decimal" placeholder="150" aria-label="Ending value">
                 </div>
                 <button type="submit">Calculate</button>
                 <p class="result" id="changeResult">Enter values to calculate.</p>
