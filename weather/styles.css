@@ -9,6 +9,10 @@ body {
         url("osman-rana-GXEZuWo5m4I-unsplash.jpg") center center / cover no-repeat fixed;
 }
 
+* {
+    box-sizing: border-box;
+}
+
 .weather-shell {
     min-height: 100vh;
     display: flex;
@@ -55,18 +59,26 @@ h1 {
     gap: 10px;
     align-items: center;
     margin-top: 24px;
+    width: 100%;
 }
 
 #locationInput {
+    display: block;
+    flex: 1 1 260px;
+    min-width: 0;
     padding: 12px 14px;
-    width: 240px;
+    width: 100%;
     border: 1px solid rgba(255, 255, 255, 0.18);
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.94);
     color: #1e2430;
+    font-size: 16px;
 }
 
 button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     padding: 12px 18px;
     background-color: #58786e;
     border: none;
@@ -74,6 +86,7 @@ button {
     border-radius: 8px;
     cursor: pointer;
     font-size: 0.98rem;
+    white-space: nowrap;
 }
 
 button:hover {
@@ -146,13 +159,14 @@ button:hover {
     }
 
     .controls {
-        flex-direction: column;
-        align-items: stretch;
+        display: grid;
+        grid-template-columns: 1fr;
     }
 
     #locationInput,
     button {
         width: 100%;
+        max-width: 100%;
     }
 
     button {
