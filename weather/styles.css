@@ -123,15 +123,48 @@ button:hover {
 }
 
 @media (max-width: 640px) {
+    body {
+        background-attachment: scroll;
+    }
+
     .weather-shell {
-        padding: 20px;
+        padding: 16px;
     }
 
     .weather-panel {
-        padding: 22px;
+        width: 100%;
+        padding: 20px;
+        border-radius: 14px;
     }
 
-    #locationInput {
+    h1 {
+        font-size: clamp(2.1rem, 10vw, 3rem);
+    }
+
+    .intro {
+        font-size: 1rem;
+    }
+
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #locationInput,
+    button {
         width: 100%;
+    }
+
+    button {
+        min-height: 48px;
+    }
+
+    .weather-results {
+        padding: 16px;
+    }
+
+    .photo-credit {
+        font-size: 0.85rem;
+        line-height: 1.5;
     }
 }
