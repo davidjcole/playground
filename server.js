@@ -74,7 +74,7 @@ function buildSecurityHeaders(headers = {}) {
     "Referrer-Policy": "strict-origin-when-cross-origin",
     "X-Content-Type-Options": "nosniff",
     "X-Frame-Options": "DENY",
-    "Permissions-Policy": "geolocation=(), microphone=(), camera=()",
+    "Permissions-Policy": "geolocation=(self), microphone=(), camera=()",
     "Content-Security-Policy": [
       "default-src 'self'",
       "img-src 'self' data: https:",

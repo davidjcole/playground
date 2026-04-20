@@ -42,19 +42,26 @@ async function detectLocationAndFetchWeather() {
     detectButton.textContent = 'Detecting...';
 
     try {
-        const response = await fetch('/api/geoip');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        if (!navigator.geolocation) {
+            throw new Error('Geolocation is not supported by this browser.');
         }
 
-        const data = await response.json();
-        const locationQuery = `${data.lat},${data.lon}`;
-        const detectedLabel = `${data.city}, ${data.regionName}, ${data.country}`;
-        document.getElementById('locationInput').value = detectedLabel;
-        await fetchWeatherForLocation(locationQuery, detectedLabel);
+        const position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 300000
+            });
+        });
+
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+        const locationQuery = `${latitude},${longitude}`;
+        document.getElementById('locationInput').value = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+        await fetchWeatherForLocation(locationQuery, 'Your current location');
     } catch (error) {
         console.error('Failed to detect location:', error);
-        renderWeatherMessage('Unable to detect your location automatically right now.');
+        renderWeatherMessage('Unable to detect your location automatically. Please allow location access or enter a place manually.');
     } finally {
         detectButton.disabled = false;
         detectButton.textContent = originalText;
