@@ -9,8 +9,13 @@ const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
 const WEATHER_CACHE_TTL_MS = 5 * 60 * 1000;
 const WEATHER_RATE_LIMIT_WINDOW_MS = 60 * 1000;
 const WEATHER_RATE_LIMIT_MAX = 20;
+const GEOIP_CACHE_TTL_MS = 10 * 60 * 1000;
+const GEOIP_RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const GEOIP_RATE_LIMIT_MAX = 10;
 const weatherCache = new Map();
 const weatherRateLimits = new Map();
+const geoIpCache = new Map();
+const geoIpRateLimits = new Map();
 
 const MIME_TYPES = {
   ".css": "text/css; charset=utf-8",
@@ -120,21 +125,29 @@ function validateWeatherLocation(location) {
 }
 
 function checkWeatherRateLimit(req) {
+  return checkRateLimit(req, weatherRateLimits, WEATHER_RATE_LIMIT_WINDOW_MS, WEATHER_RATE_LIMIT_MAX);
+}
+
+function checkGeoIpRateLimit(req) {
+  return checkRateLimit(req, geoIpRateLimits, GEOIP_RATE_LIMIT_WINDOW_MS, GEOIP_RATE_LIMIT_MAX);
+}
+
+function checkRateLimit(req, store, windowMs, maxRequests) {
   const now = Date.now();
-  pruneExpiredEntries(weatherRateLimits, now);
+  pruneExpiredEntries(store, now);
 
   const ip = getClientIp(req);
-  const current = weatherRateLimits.get(ip);
+  const current = store.get(ip);
   if (!current || current.expiresAt <= now) {
-    weatherRateLimits.set(ip, {
+    store.set(ip, {
       count: 1,
-      expiresAt: now + WEATHER_RATE_LIMIT_WINDOW_MS
+      expiresAt: now + windowMs
     });
     return { allowed: true };
   }
 
   current.count += 1;
-  if (current.count > WEATHER_RATE_LIMIT_MAX) {
+  if (current.count > maxRequests) {
     return {
       allowed: false,
       retryAfterSeconds: Math.max(1, Math.ceil((current.expiresAt - now) / 1000))
@@ -142,6 +155,14 @@ function checkWeatherRateLimit(req) {
   }
 
   return { allowed: true };
+}
+
+function writeRateLimitedJson(res, retryAfterSeconds, payload) {
+  res.writeHead(429, buildSecurityHeaders({
+    "Content-Type": "application/json; charset=utf-8",
+    "Retry-After": String(retryAfterSeconds)
+  }));
+  res.end(JSON.stringify(payload));
 }
 
 function resolveStaticPath(requestPath) {
@@ -170,11 +191,9 @@ function resolveStaticPath(requestPath) {
 async function handleWeatherProxy(req, res, url) {
   const rateLimit = checkWeatherRateLimit(req);
   if (!rateLimit.allowed) {
-    res.writeHead(429, buildSecurityHeaders({
-      "Content-Type": "application/json; charset=utf-8",
-      "Retry-After": String(rateLimit.retryAfterSeconds)
-    }));
-    res.end(JSON.stringify({ error: "Too many weather requests. Please try again shortly." }));
+    writeRateLimitedJson(res, rateLimit.retryAfterSeconds, {
+      error: "Too many weather requests. Please try again shortly."
+    });
     return;
   }
 
@@ -231,11 +250,76 @@ async function handleWeatherProxy(req, res, url) {
   }
 }
 
+async function handleGeoIpProxy(req, res) {
+  const rateLimit = checkGeoIpRateLimit(req);
+  if (!rateLimit.allowed) {
+    writeRateLimitedJson(res, rateLimit.retryAfterSeconds, {
+      error: "Too many automatic location requests. Please try again shortly."
+    });
+    return;
+  }
+
+  const cacheKey = getClientIp(req);
+  const now = Date.now();
+  pruneExpiredEntries(geoIpCache, now);
+
+  const cached = geoIpCache.get(cacheKey);
+  if (cached && cached.expiresAt > now) {
+    res.writeHead(200, buildSecurityHeaders({
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "private, max-age=600"
+    }));
+    res.end(cached.body);
+    return;
+  }
+
+  const upstreamUrl = new URL("http://ip-api.com/json/");
+  upstreamUrl.searchParams.set("fields", "status,message,country,regionName,city,lat,lon,query");
+
+  try {
+    const upstreamResponse = await fetch(upstreamUrl);
+    const body = await upstreamResponse.text();
+
+    if (!upstreamResponse.ok) {
+      res.writeHead(upstreamResponse.status, buildSecurityHeaders({
+        "Content-Type": upstreamResponse.headers.get("content-type") || "application/json; charset=utf-8",
+        "Cache-Control": "no-store"
+      }));
+      res.end(body);
+      return;
+    }
+
+    const parsed = JSON.parse(body);
+    if (parsed.status !== "success") {
+      sendJson(res, 502, { error: parsed.message || "Failed to determine location" });
+      return;
+    }
+
+    geoIpCache.set(cacheKey, {
+      body,
+      expiresAt: now + GEOIP_CACHE_TTL_MS
+    });
+
+    res.writeHead(200, buildSecurityHeaders({
+      "Content-Type": "application/json; charset=utf-8",
+      "Cache-Control": "private, max-age=600"
+    }));
+    res.end(body);
+  } catch (error) {
+    sendJson(res, 502, { error: "Failed to determine location" });
+  }
+}
+
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://${req.headers.host || "localhost"}`);
 
   if (url.pathname === "/api/weather") {
     await handleWeatherProxy(req, res, url);
+    return;
+  }
+
+  if (url.pathname === "/api/geoip") {
+    await handleGeoIpProxy(req, res);
     return;
   }
 

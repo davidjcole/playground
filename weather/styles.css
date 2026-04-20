@@ -11,9 +11,15 @@ h1 {
     color: #555;
 }
 
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
 #locationInput {
     padding: 10px;
-    margin-right: 10px;
     width: 200px;
     border: 2px solid #ddd;
     border-radius: 5px;
@@ -30,6 +36,15 @@ button {
 
 button:hover {
     background-color: #4cae4c;
+}
+
+.secondary-button {
+    background-color: #6c757d;
+}
+
+.secondary-button:hover,
+.secondary-button:focus-visible {
+    background-color: #5c636a;
 }
 
 #weather p {

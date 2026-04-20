@@ -1,12 +1,5 @@
-async function fetchWeather() {
-    const location = document.getElementById('locationInput').value.trim();
+async function fetchWeatherForLocation(location, detectedLabel = null) {
     const weatherElement = document.getElementById('weather');
-
-    if (!location) {
-        renderWeatherMessage('Please enter a location.');
-        return;
-    }
-
     try {
         const response = await fetch(`/api/weather?q=${encodeURIComponent(location)}`);
         if (!response.ok) {
@@ -15,9 +8,10 @@ async function fetchWeather() {
         const data = await response.json();
 
         const clothesRecommendation = getClothesRecommendation(data.current.temp_c, data.current.condition.text);
+        const displayLocation = detectedLabel || `${data.location.name}, ${data.location.region}, ${data.location.country}`;
 
         renderWeatherData(weatherElement, [
-            ['Location', `${data.location.name}, ${data.location.region}, ${data.location.country}`],
+            ['Location', displayLocation],
             ['Temperature', `${data.current.temp_c}°C`],
             ['Condition', data.current.condition.text],
             ['Wind', `${data.current.wind_kph} kph, ${data.current.wind_dir}`],
@@ -27,6 +21,43 @@ async function fetchWeather() {
     } catch (error) {
         console.error('Failed to fetch weather data:', error);
         renderWeatherMessage('Error fetching weather data. Please check console for details.');
+    }
+}
+
+async function fetchWeather() {
+    const location = document.getElementById('locationInput').value.trim();
+
+    if (!location) {
+        renderWeatherMessage('Please enter a location.');
+        return;
+    }
+
+    await fetchWeatherForLocation(location);
+}
+
+async function detectLocationAndFetchWeather() {
+    const detectButton = document.getElementById('detectLocationButton');
+    const originalText = detectButton.textContent;
+    detectButton.disabled = true;
+    detectButton.textContent = 'Detecting...';
+
+    try {
+        const response = await fetch('/api/geoip');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const locationQuery = `${data.lat},${data.lon}`;
+        const detectedLabel = `${data.city}, ${data.regionName}, ${data.country}`;
+        document.getElementById('locationInput').value = detectedLabel;
+        await fetchWeatherForLocation(locationQuery, detectedLabel);
+    } catch (error) {
+        console.error('Failed to detect location:', error);
+        renderWeatherMessage('Unable to detect your location automatically right now.');
+    } finally {
+        detectButton.disabled = false;
+        detectButton.textContent = originalText;
     }
 }
 
@@ -76,4 +107,5 @@ function renderWeatherData(container, rows) {
 }
 
 // Event listener for the button
-document.querySelector('button').addEventListener('click', fetchWeather);
+document.getElementById('getWeatherButton').addEventListener('click', fetchWeather);
+document.getElementById('detectLocationButton').addEventListener('click', detectLocationAndFetchWeather);
