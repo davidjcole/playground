@@ -56,9 +56,8 @@ async function detectLocationAndFetchWeather() {
 
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
-        const locationQuery = `${latitude},${longitude}`;
         document.getElementById('locationInput').value = `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
-        await fetchWeatherForLocation(locationQuery, 'Your current location');
+        renderWeatherMessage('Location detected. Click "Get Weather" to load the forecast.');
     } catch (error) {
         console.error('Failed to detect location:', error);
         renderWeatherMessage('Unable to detect your location automatically. Please allow location access or enter a place manually.');
