@@ -39,10 +39,15 @@ async function copyToClipboard(text, button) {
     }
 
     const originalLabel = button.getAttribute("aria-label");
-    button.textContent = "✓";
+    const icon = button.querySelector(".copy-icon");
+    if (icon) {
+        icon.style.opacity = "1";
+    }
     button.setAttribute("aria-label", "Copied");
     window.setTimeout(() => {
-        button.textContent = "⧉";
+        if (icon) {
+            icon.style.opacity = "0.8";
+        }
         button.setAttribute("aria-label", originalLabel);
     }, 1200);
 }
@@ -64,9 +69,15 @@ function setCalculatedResult(elementId, message, rawValue) {
     const copyButton = document.createElement("button");
     copyButton.type = "button";
     copyButton.className = "copy-button";
-    copyButton.textContent = "⧉";
     copyButton.setAttribute("aria-label", `Copy ${rawValue}`);
     copyButton.title = "Copy result";
+
+    const copyIcon = document.createElement("img");
+    copyIcon.src = "copied-icon.png";
+    copyIcon.alt = "";
+    copyIcon.className = "copy-icon";
+    copyButton.appendChild(copyIcon);
+
     copyButton.addEventListener("click", () => copyToClipboard(rawValue, copyButton));
 
     line.appendChild(text);

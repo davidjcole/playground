@@ -125,12 +125,26 @@ button:focus-visible {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 30px;
+    height: 30px;
     padding: 0;
     border-radius: 6px;
-    font-size: 1rem;
+    background: #e3e5e8;
+    color: #5f6770;
+    border: 1px solid #cfd4da;
     line-height: 1;
+}
+
+.copy-button:hover,
+.copy-button:focus-visible {
+    background: #d7dbe0;
+}
+
+.copy-icon {
+    width: 14px;
+    height: 14px;
+    object-fit: contain;
+    opacity: 0.8;
 }
 
 .notes {
