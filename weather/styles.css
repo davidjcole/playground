@@ -1,14 +1,52 @@
-/* style.css */
 body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
+    font-family: Georgia, "Times New Roman", serif;
+    margin: 0;
     padding: 0;
-    background-color: #f4f4f9;
-    color: #333;
+    min-height: 100vh;
+    color: #f5f2ed;
+    background:
+        linear-gradient(180deg, rgba(12, 16, 24, 0.42), rgba(12, 16, 24, 0.68)),
+        url("osman-rana-GXEZuWo5m4I-unsplash.jpg") center center / cover no-repeat fixed;
+}
+
+.weather-shell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 32px;
+}
+
+.weather-panel {
+    width: min(720px, 100%);
+    padding: 28px;
+    border-radius: 18px;
+    background: rgba(18, 24, 34, 0.62);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(10px);
+}
+
+.eyebrow {
+    margin: 0 0 10px;
+    color: rgba(255, 232, 206, 0.88);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.82rem;
 }
 
 h1 {
-    color: #555;
+    margin: 0;
+    font-size: clamp(2.6rem, 7vw, 4.4rem);
+    line-height: 0.95;
+}
+
+.intro {
+    margin: 16px 0 0;
+    max-width: 56ch;
+    color: rgba(245, 242, 237, 0.82);
+    font-size: 1.08rem;
+    line-height: 1.7;
 }
 
 .controls {
@@ -16,38 +54,84 @@ h1 {
     flex-wrap: wrap;
     gap: 10px;
     align-items: center;
+    margin-top: 24px;
 }
 
 #locationInput {
-    padding: 10px;
-    width: 200px;
-    border: 2px solid #ddd;
-    border-radius: 5px;
+    padding: 12px 14px;
+    width: 240px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.94);
+    color: #1e2430;
 }
 
 button {
-    padding: 10px 20px;
-    background-color: #5cb85c;
+    padding: 12px 18px;
+    background-color: #58786e;
     border: none;
     color: white;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
+    font-size: 0.98rem;
 }
 
 button:hover {
-    background-color: #4cae4c;
+    background-color: #4b675f;
 }
 
 .secondary-button {
-    background-color: #6c757d;
+    background-color: rgba(255, 255, 255, 0.18);
 }
 
 .secondary-button:hover,
 .secondary-button:focus-visible {
-    background-color: #5c636a;
+    background-color: rgba(255, 255, 255, 0.26);
 }
 
-#weather p {
+.weather-results {
+    margin-top: 24px;
+    padding: 18px 20px;
+    border-radius: 14px;
+    background: rgba(11, 15, 22, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.weather-results p {
     margin: 5px 0;
     font-size: 16px;
+    line-height: 1.6;
+}
+
+.photo-credit {
+    margin-top: 24px;
+    color: rgba(245, 242, 237, 0.8);
+    font-size: 0.92rem;
+}
+
+.photo-credit p {
+    margin: 0;
+}
+
+.photo-credit a {
+    color: #ffffff;
+}
+
+.photo-credit a:hover,
+.photo-credit a:focus-visible {
+    color: #ffd7a8;
+}
+
+@media (max-width: 640px) {
+    .weather-shell {
+        padding: 20px;
+    }
+
+    .weather-panel {
+        padding: 22px;
+    }
+
+    #locationInput {
+        width: 100%;
+    }
 }

@@ -11,22 +11,42 @@
     <meta property="og:description" content="Check the current weather for any location and get a simple clothing recommendation.">
     <meta property="og:url" content="https://playground.thinkingsystems.co.uk/weather/">
     <meta property="og:site_name" content="Thinking Systems Playground">
+    <meta property="og:image" content="https://playground.thinkingsystems.co.uk/weather/osman-rana-GXEZuWo5m4I-unsplash.jpg">
+    <meta property="og:image:alt" content="Rainy city street scene with a person holding an umbrella">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="Check the Weather">
     <meta name="twitter:description" content="Check the current weather for any location and get a simple clothing recommendation.">
+    <meta name="twitter:image" content="https://playground.thinkingsystems.co.uk/weather/osman-rana-GXEZuWo5m4I-unsplash.jpg">
     <link rel="icon" type="image/x-icon" href="https://thinkingsystems.co.uk/assets/favicon.ico">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Check the Weather</h1>
-    <div class="controls">
-        <input type="text" id="locationInput" placeholder="Enter location (e.g., London, UK)">
-        <button id="getWeatherButton" type="button">Get Weather</button>
-        <button id="detectLocationButton" type="button" class="secondary-button">Use my location</button>
-    </div>
-    <div id="weather">
-        <p>Please enter a location and click "Get Weather" to display weather information.</p>
-    </div>
+    <main class="weather-shell">
+        <section class="weather-panel">
+            <p class="eyebrow">Thinking Systems Playground</p>
+            <h1>Check the Weather</h1>
+            <p class="intro">Look up the current weather for any location or use your device location to get a quick forecast and clothing recommendation.</p>
+
+            <div class="controls">
+                <input type="text" id="locationInput" placeholder="Enter location (e.g., London, UK)">
+                <button id="getWeatherButton" type="button">Get Weather</button>
+                <button id="detectLocationButton" type="button" class="secondary-button">Use my location</button>
+            </div>
+
+            <div id="weather" class="weather-results">
+                <p>Please enter a location and click "Get Weather" to display weather information.</p>
+            </div>
+        </section>
+
+        <footer class="photo-credit">
+            <p>
+                Photo by
+                <a href="https://unsplash.com/@osmanrana?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Osman Rana</a>
+                on
+                <a href="https://unsplash.com/photos/person-walking-on-street-and-holding-umbrella-while-raining-with-vehicle-nearby-GXEZuWo5m4I?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
+            </p>
+        </footer>
+    </main>
 
     <script src="scripts.js"></script>
 </body>
