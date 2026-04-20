@@ -147,6 +147,12 @@ button:focus-visible {
     opacity: 0.8;
 }
 
+.copy-button.copied {
+    background: #dbe9de;
+    border-color: #bdd3c1;
+    color: #3f6b48;
+}
+
 .notes {
     margin-top: 24px;
 }

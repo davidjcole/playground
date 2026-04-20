@@ -26,6 +26,21 @@ function formatRawNumber(value) {
     return value.toString();
 }
 
+function createTickIcon() {
+    const svgNS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNS, "svg");
+    svg.setAttribute("viewBox", "0 0 16 16");
+    svg.setAttribute("aria-hidden", "true");
+    svg.classList.add("copy-icon");
+
+    const path = document.createElementNS(svgNS, "path");
+    path.setAttribute("d", "M6.4 11.2 3.3 8.1l-1.1 1.1 4.2 4.2L13.8 6l-1.1-1.1z");
+    path.setAttribute("fill", "currentColor");
+    svg.appendChild(path);
+
+    return svg;
+}
+
 async function copyToClipboard(text, button) {
     try {
         await navigator.clipboard.writeText(text);
@@ -39,15 +54,22 @@ async function copyToClipboard(text, button) {
     }
 
     const originalLabel = button.getAttribute("aria-label");
-    const icon = button.querySelector(".copy-icon");
-    if (icon) {
-        icon.style.opacity = "1";
+    const copyIcon = button.querySelector(".copy-icon");
+    if (copyIcon) {
+        copyIcon.replaceWith(createTickIcon());
     }
+    button.classList.add("copied");
     button.setAttribute("aria-label", "Copied");
     window.setTimeout(() => {
-        if (icon) {
-            icon.style.opacity = "0.8";
+        const tickIcon = button.querySelector(".copy-icon");
+        if (tickIcon) {
+            const resetIcon = document.createElement("img");
+            resetIcon.src = "copied-icon.png";
+            resetIcon.alt = "";
+            resetIcon.className = "copy-icon";
+            tickIcon.replaceWith(resetIcon);
         }
+        button.classList.remove("copied");
         button.setAttribute("aria-label", originalLabel);
     }, 1200);
 }
