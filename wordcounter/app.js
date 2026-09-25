@@ -77,8 +77,8 @@ function getLines(text){
 
 function getWords(text, countNumbersAsWords){
   const re = countNumbersAsWords
-    ? /\b(?:[a-zA-Z]+(?:['-][a-zA-Z]+)*|\d+(?:[\.,]\d+)*)\b/g
-    : /\b[a-zA-Z]+(?:['-][a-zA-Z]+)*\b/g;
+    ? /\b(?:[a-zA-Z]+(?:['\u2018\u2019-][a-zA-Z]+)*|\d+(?:[\.,]\d+)*)\b/g
+    : /\b[a-zA-Z]+(?:['\u2018\u2019-][a-zA-Z]+)*\b/g;
   return (text.match(re) || []);
 }
 
