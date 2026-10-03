@@ -13,6 +13,7 @@ Legacy GitHub Pages URL:
 This repository contains a set of lightweight HTML, CSS, and JavaScript mini-projects, including:
 
 - `index.html` and `styles.css`: landing page for the playground
+- `image-optimiser/`: private browser-based cropping, resizing, and JPEG/PNG/WebP export
 - `percentage-calculator/`: a simple percentage calculator for common percentage and change calculations
 - `readability/`: a Gunning Fog Index readability calculator
 - `wordcounter/`: a richer word counter with readability and keyword density metrics
@@ -72,6 +73,8 @@ npm start
 The app will run on `http://localhost:3000` by default, or on the port provided by Railway via `PORT`.
 
 ## Notes
+
+- Image Optimiser runs at `/image-optimiser/`. Images are processed in the browser and are not uploaded to the server. It accepts JPEG, PNG, WebP, GIF, BMP, and browser-supported AVIF. Animated images become a single still frame; HEIC/TIFF are not supported. Inputs are limited to 40 MB, 40 megapixels, and 16,384 pixels per side; exports are limited to 4096 pixels per side and never upscaled. PNG export is lossless; quality controls apply to JPEG/WebP. File sizes are measured from the generated output, which can be larger than the source. Cropper.js 1.6.2 and Lucide 0.468.0 are bundled locally with their licences under `image-optimiser/vendor/`.
 
 - Most of the site is plain static HTML/CSS/JavaScript.
 - The weather page should call the local `/api/weather` endpoint rather than talking directly to WeatherAPI from client-side code.

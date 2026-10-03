@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Crop, resize and optimise images privately in your browser. Export JPEG, PNG or WebP.">
+    <title>Image Optimiser | Thinking Systems Playground</title>
+    <link rel="icon" href="https://thinkingsystems.co.uk/assets/favicon.ico">
+    <link rel="stylesheet" href="vendor/cropper.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="vendor/cropper.min.js"></script>
+    <script defer src="vendor/lucide.min.js"></script>
+    <script defer src="app.js"></script>
+</head>
+<body>
+    <header class="site-header"><nav class="page-width" aria-label="Primary">
+        <a href="/" class="back-link"><i data-lucide="arrow-left"></i> Playground</a>
+        <a href="https://thinkingsystems.co.uk/">Thinking Systems</a>
+    </nav></header>
+    <main class="page-width">
+        <header class="page-heading">
+            <div><p class="eyebrow">IMAGE TOOLS</p><h1>Image Optimiser</h1></div>
+            <p class="privacy"><i data-lucide="shield-check"></i> Your images stay on your device</p>
+        </header>
+        <div id="message" class="message" role="status" aria-live="polite" hidden></div>
+        <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,image/gif,image/bmp,image/avif,.jpg,.jpeg,.png,.webp,.gif,.bmp,.avif" hidden>
+        <section id="upload" class="upload-surface" aria-label="Upload image">
+            <div class="upload-icon"><i data-lucide="image-up"></i></div>
+            <h2>Choose an image</h2>
+            <p>JPEG, PNG, WebP, GIF, BMP or AVIF</p>
+            <button class="primary" id="choose"><i data-lucide="plus"></i> Choose image</button>
+            <p class="upload-note">or drop a file here <span>Up to 40 MB</span></p>
+        </section>
+        <section id="editor" class="editor" hidden aria-label="Image editor">
+            <div class="workspace">
+                <div class="file-bar"><div class="file-info"><i data-lucide="image"></i><div><strong id="file-name"></strong><span id="file-info"></span></div></div><button id="replace" class="secondary"><i data-lucide="folder-open"></i><span>Replace</span></button></div>
+                <div class="workspace-heading"><h2>Crop</h2><span id="crop-size"></span></div>
+                <div id="image-stage" class="image-stage"><img id="source" alt="Image to crop"></div>
+                <fieldset id="crop-tools" class="crop-tools" disabled>
+                    <div class="toolbar">
+                        <div class="tool-group">
+                            <button type="button" id="rotate-left" class="icon-button" title="Rotate left" aria-label="Rotate left"><i data-lucide="rotate-ccw"></i></button>
+                            <button type="button" id="rotate-right" class="icon-button" title="Rotate right" aria-label="Rotate right"><i data-lucide="rotate-cw"></i></button>
+                            <button type="button" id="flip" class="icon-button" title="Flip horizontally" aria-label="Flip horizontally"><i data-lucide="flip-horizontal-2"></i></button>
+                        </div>
+                        <div class="tool-group">
+                            <button type="button" id="zoom-out" class="icon-button" title="Zoom out" aria-label="Zoom out"><i data-lucide="zoom-out"></i></button>
+                            <button type="button" id="zoom-in" class="icon-button" title="Zoom in" aria-label="Zoom in"><i data-lucide="zoom-in"></i></button>
+                            <button type="button" id="reset" class="icon-button" title="Reset crop and rotation" aria-label="Reset crop and rotation"><i data-lucide="undo-2"></i></button>
+                        </div>
+                        <label class="ratio-label" for="ratio">Aspect ratio <select id="ratio"><option value="free">Free</option><option value="original">Original</option><option value="1">Square (1:1)</option><option value="1.3333333333333333">Landscape (4:3)</option><option value="1.7777777777777777">Wide (16:9)</option><option value="0.8">Portrait (4:5)</option><option value="0.5625">Story (9:16)</option></select></label>
+                    </div>
+                    <details class="precise-crop"><summary>Crop coordinates</summary><div class="coordinate-grid">
+                        <label>X<input id="crop-x" type="number" min="0" step="1"></label>
+                        <label>Y<input id="crop-y" type="number" min="0" step="1"></label>
+                        <label>Width<input id="crop-width" type="number" min="1" step="1"></label>
+                        <label>Height<input id="crop-height" type="number" min="1" step="1"></label>
+                    </div></details>
+                </fieldset>
+            </div>
+            <aside class="export-panel" aria-label="Export settings">
+                <h2>Export</h2>
+                <fieldset id="export-settings" disabled>
+                    <label for="format">Format</label>
+                    <select id="format"><option value="image/webp">WebP</option><option value="image/jpeg">JPEG</option><option value="image/png">PNG</option></select>
+                    <div id="quality-control"><div class="label-line"><label for="quality">Quality</label><output id="quality-value" for="quality">80%</output></div><input id="quality" type="range" min="10" max="100" value="80" step="1"></div>
+                    <p id="png-note" class="setting-note" hidden>PNG uses lossless compression.</p>
+                    <div class="section-label">Maximum dimensions <span>px</span></div>
+                    <div class="dimension-grid"><label for="max-width">Width<input id="max-width" type="number" min="1" max="4096" step="1" value="1920" required></label><label for="max-height">Height<input id="max-height" type="number" min="1" max="4096" step="1" value="1920" required></label></div>
+                    <label id="background-control" for="background" hidden>JPEG background <input id="background" type="color" value="#ffffff"></label>
+                    <label class="filename-label" for="export-name">File name</label><div class="filename-input"><input id="export-name" type="text" maxlength="100" value="image-optimised"><span id="extension">.webp</span></div>
+                </fieldset>
+                <div class="export-result" aria-busy="false" id="export-result">
+                    <div class="preview-heading"><h3>Output preview</h3><span id="output-dimensions"></span></div>
+                    <div class="preview-stage"><img id="preview" alt="Export preview" hidden><span id="preview-placeholder">Preparing preview...</span></div>
+                    <dl class="size-comparison"><div><dt>Original</dt><dd id="original-size">-</dd></div><div><dt>Export</dt><dd id="export-size">-</dd></div></dl>
+                    <p id="saving" class="saving"></p>
+                    <button id="download" class="primary download" disabled><i data-lucide="download"></i> Download image</button>
+                </div>
+            </aside>
+        </section>
+        <footer class="tool-footer"><span>Thinking Systems Playground</span><span>JPEG / PNG / WebP</span></footer>
+    </main>
+</body>
+</html>

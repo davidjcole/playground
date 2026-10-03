@@ -77,7 +77,7 @@ function buildSecurityHeaders(headers = {}) {
     "Permissions-Policy": "geolocation=(self), microphone=(), camera=()",
     "Content-Security-Policy": [
       "default-src 'self'",
-      "img-src 'self' data: https:",
+      "img-src 'self' data: blob: https:",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "script-src 'self'",
       "font-src 'self' data: https://fonts.gstatic.com",
