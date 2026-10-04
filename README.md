@@ -5,9 +5,6 @@ A small collection of browser-based experiments, utilities, and prototypes.
 Live site:
 [https://playground.thinkingsystems.co.uk/](https://playground.thinkingsystems.co.uk/)
 
-Legacy GitHub Pages URL:
-[https://davidjcole.github.io/playground/](https://davidjcole.github.io/playground/)
-
 ## What's in the repo
 
 This repository contains a set of lightweight HTML, CSS, and JavaScript mini-projects, including:
