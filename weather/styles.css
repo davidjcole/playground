@@ -1,12 +1,27 @@
 body {
+    --weather-background: url("osman-rana-GXEZuWo5m4I-unsplash.jpg");
     font-family: Georgia, "Times New Roman", serif;
     margin: 0;
     padding: 0;
     min-height: 100vh;
     color: #f5f2ed;
+    background-color: #182228;
+    isolation: isolate;
+}
+
+.weather-background {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.weather-background-layer {
+    position: absolute;
+    inset: 0;
     background:
         linear-gradient(180deg, rgba(12, 16, 24, 0.42), rgba(12, 16, 24, 0.68)),
-        url("osman-rana-GXEZuWo5m4I-unsplash.jpg") center center / cover no-repeat fixed;
+        var(--weather-background) center center / cover no-repeat;
 }
 
 * {
@@ -136,10 +151,6 @@ button:hover {
 }
 
 @media (max-width: 640px) {
-    body {
-        background-attachment: scroll;
-    }
-
     .weather-shell {
         padding: 16px;
     }
