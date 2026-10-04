@@ -4,7 +4,7 @@ const weatherPhotos = {
     cloudy: { image: 'images/cloudy.jpg', photographer: 'Billy Huynh', username: 'billy_huy', photoId: 'v9bnfMCyKbg' },
     rain: { image: 'osman-rana-GXEZuWo5m4I-unsplash.jpg', photographer: 'Osman Rana', username: 'osmanrana', photoId: 'GXEZuWo5m4I' },
     snow: { image: 'images/snow.jpg', photographer: 'Cloris Ying', username: 'clorisyy', photoId: 'J1LYc-oMA4k' },
-    fog: { image: 'images/fog.jpg', photographer: 'James Kelly-Smith', username: 'jksphotographer', photoId: 'D2KCi3AzRQ8' },
+    fog: { image: 'images/fog.jpg', photographer: 'Dave Hoefler', username: 'iamthedave', photoId: 'od287vQyufw' },
     thunderstorm: { image: 'images/thunderstorm.jpg', photographer: 'Yifu Wu', username: 'nnonno', photoId: '9mjivTB4YMs' }
 };
 
@@ -17,6 +17,61 @@ const weatherConditionGroups = {
 };
 let weatherRequestVersion = 0;
 let weatherBackgroundVersion = 0;
+let latestWeather = null;
+const weatherSettingsKey = 'playground-weather-units';
+const weatherSettings = loadWeatherSettings();
+
+function loadWeatherSettings() {
+    let saved;
+    try { saved = JSON.parse(window.localStorage.getItem(weatherSettingsKey)); } catch { /* Storage may be unavailable. */ }
+    return { temperature: saved?.temperature === 'f' ? 'f' : 'c', wind: saved?.wind === 'mph' ? 'mph' : 'kph' };
+}
+
+function formatTemperature(celsius) {
+    const value = weatherSettings.temperature === 'f' ? celsius * 9 / 5 + 32 : celsius;
+    return `${formatWeatherNumber(value)}°${weatherSettings.temperature.toUpperCase()}`;
+}
+
+function formatWindSpeed(kph) {
+    const value = weatherSettings.wind === 'mph' ? kph / 1.609344 : kph;
+    return `${formatWeatherNumber(value)} ${weatherSettings.wind}`;
+}
+
+function formatWindDirection(direction) {
+    const directions = {
+        N: 'North', NNE: 'North-north-east', NE: 'North-east', ENE: 'East-north-east',
+        E: 'East', ESE: 'East-south-east', SE: 'South-east', SSE: 'South-south-east',
+        S: 'South', SSW: 'South-south-west', SW: 'South-west', WSW: 'West-south-west',
+        W: 'West', WNW: 'West-north-west', NW: 'North-west', NNW: 'North-north-west'
+    };
+    const value = String(direction || '').trim();
+    return directions[value.toUpperCase()] || value || 'Unknown direction';
+}
+
+function formatWeatherNumber(value) {
+    return new Intl.NumberFormat('en-GB', { maximumFractionDigits: 1 }).format(value);
+}
+
+function renderWeatherForecast(data, detectedLabel = null) {
+    const displayLocation = detectedLabel || `${data.location.name}, ${data.location.region}, ${data.location.country}`;
+    renderWeatherData(document.getElementById('weather'), [
+        ['Location', displayLocation],
+        ['Temperature', formatTemperature(data.current.temp_c)],
+        ['Condition', data.current.condition.text],
+        ['Wind', `${formatWindSpeed(data.current.wind_kph)}, ${formatWindDirection(data.current.wind_dir)}`],
+        ['Humidity', `${data.current.humidity}%`],
+        ['Clothing Recommendation', getClothesRecommendation(data.current.temp_c, data.current.condition.text)]
+    ]);
+}
+
+function updateWeatherSettings(event) {
+    const { name, value } = event.target;
+    if (name === 'temperatureUnit' && ['c', 'f'].includes(value)) weatherSettings.temperature = value;
+    else if (name === 'windUnit' && ['kph', 'mph'].includes(value)) weatherSettings.wind = value;
+    else return;
+    try { window.localStorage.setItem(weatherSettingsKey, JSON.stringify(weatherSettings)); } catch { /* Keep preferences for this session when storage is unavailable. */ }
+    if (latestWeather) renderWeatherForecast(latestWeather.data, latestWeather.detectedLabel);
+}
 
 function getWeatherPhotoKey(condition = {}, isDay = 1) {
     const code = Number(condition.code);
@@ -74,7 +129,6 @@ function updateWeatherBackground(condition, isDay) {
 }
 
 async function fetchWeatherForLocation(location, detectedLabel = null) {
-    const weatherElement = document.getElementById('weather');
     const requestVersion = ++weatherRequestVersion;
     ++weatherBackgroundVersion;
     try {
@@ -85,17 +139,8 @@ async function fetchWeatherForLocation(location, detectedLabel = null) {
         const data = await response.json();
         if (requestVersion !== weatherRequestVersion) return;
 
-        const clothesRecommendation = getClothesRecommendation(data.current.temp_c, data.current.condition.text);
-        const displayLocation = detectedLabel || `${data.location.name}, ${data.location.region}, ${data.location.country}`;
-
-        renderWeatherData(weatherElement, [
-            ['Location', displayLocation],
-            ['Temperature', `${data.current.temp_c}°C`],
-            ['Condition', data.current.condition.text],
-            ['Wind', `${data.current.wind_kph} kph, ${data.current.wind_dir}`],
-            ['Humidity', `${data.current.humidity}%`],
-            ['Clothing Recommendation', clothesRecommendation]
-        ]);
+        latestWeather = { data, detectedLabel };
+        renderWeatherForecast(data, detectedLabel);
         updateWeatherBackground(data.current.condition, data.current.is_day);
     } catch (error) {
         if (requestVersion !== weatherRequestVersion) return;
@@ -153,9 +198,9 @@ function getClothesRecommendation(temperature, condition) {
     if (temperature > 25) {
         recommendation = 'Wear light clothing such as a T-shirt and shorts.';
     } else if (temperature > 15) {
-        recommendation = 'Wear long pants and a long-sleeve shirt.';
+        recommendation = 'Wear trousers and a long-sleeved shirt.';
     } else if (temperature > 5) {
-        recommendation = 'Consider a sweater or a light jacket.';
+        recommendation = 'Consider a jumper or a light jacket.';
     } else {
         recommendation = 'Wear a warm coat, hat, and gloves.';
     }
@@ -171,6 +216,7 @@ function getClothesRecommendation(temperature, condition) {
 }
 
 function renderWeatherMessage(message) {
+    latestWeather = null;
     const weatherElement = document.getElementById('weather');
     weatherElement.replaceChildren();
 
@@ -195,3 +241,31 @@ function renderWeatherData(container, rows) {
 // Event listener for the button
 document.getElementById('getWeatherButton').addEventListener('click', fetchWeather);
 document.getElementById('detectLocationButton').addEventListener('click', detectLocationAndFetchWeather);
+
+const settingsDialog = document.getElementById('settingsDialog');
+document.getElementById('settingsButton').addEventListener('click', () => settingsDialog.showModal());
+document.getElementById('closeSettingsButton').addEventListener('click', () => settingsDialog.close());
+document.getElementById('doneSettingsButton').addEventListener('click', () => settingsDialog.close());
+settingsDialog.addEventListener('change', updateWeatherSettings);
+settingsDialog.addEventListener('keydown', (event) => {
+    if (event.key !== 'Tab') return;
+    const controls = settingsDialog.querySelectorAll('button:not([disabled]), input:checked');
+    const first = controls[0];
+    const last = controls[controls.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+    }
+});
+settingsDialog.addEventListener('click', (event) => {
+    if (event.target !== settingsDialog) return;
+    const bounds = settingsDialog.getBoundingClientRect();
+    if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) settingsDialog.close();
+});
+for (const input of document.querySelectorAll('input[name="temperatureUnit"], input[name="windUnit"]')) {
+    input.checked = input.value === (input.name === 'temperatureUnit' ? weatherSettings.temperature : weatherSettings.wind);
+}
+window.lucide?.createIcons();

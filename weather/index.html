@@ -24,7 +24,10 @@
     <div id="weatherBackground" class="weather-background" aria-hidden="true"><div class="weather-background-layer"></div></div>
     <main class="weather-shell">
         <section class="weather-panel">
-            <p class="eyebrow">Thinking Systems Playground</p>
+            <div class="panel-heading">
+                <p class="eyebrow">Thinking Systems Playground</p>
+                <button id="settingsButton" class="settings-button secondary-button" type="button" title="Settings" aria-label="Settings" aria-haspopup="dialog" aria-controls="settingsDialog"><i data-lucide="settings" aria-hidden="true"></i></button>
+            </div>
             <h1>Check the Weather</h1>
             <p class="intro">Look up the current weather for any location or use your device location to get a quick forecast and clothing recommendation.</p>
 
@@ -49,6 +52,26 @@
         </footer>
     </main>
 
+    <dialog id="settingsDialog" class="settings-dialog" aria-labelledby="settingsTitle">
+        <div class="settings-heading"><h2 id="settingsTitle">Settings</h2><button id="closeSettingsButton" class="settings-button" type="button" title="Close settings" aria-label="Close settings"><i data-lucide="x" aria-hidden="true"></i></button></div>
+        <fieldset class="unit-setting">
+            <legend>Temperature</legend>
+            <div class="unit-options">
+                <label><input type="radio" name="temperatureUnit" value="c" checked><span>Celsius <span class="unit-symbol">°C</span></span></label>
+                <label><input type="radio" name="temperatureUnit" value="f"><span>Fahrenheit <span class="unit-symbol">°F</span></span></label>
+            </div>
+        </fieldset>
+        <fieldset class="unit-setting">
+            <legend>Wind speed</legend>
+            <div class="unit-options">
+                <label><input type="radio" name="windUnit" value="kph" checked><span>kph</span></label>
+                <label><input type="radio" name="windUnit" value="mph"><span>mph</span></label>
+            </div>
+        </fieldset>
+        <button id="doneSettingsButton" type="button">Done</button>
+    </dialog>
+
+    <script src="/image-optimiser/vendor/lucide.min.js"></script>
     <script src="scripts.js"></script>
 </body>
 </html>

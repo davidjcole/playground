@@ -4,14 +4,16 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
-function setup() {
+function setup(savedSettings = null) {
     const elements = new Map();
     const images = [];
     const properties = new Map();
+    const storage = new Map(savedSettings === null ? [] : [['playground-weather-units', savedSettings]]);
     const context = vm.createContext({
         console,
-        window: { matchMedia: () => ({ matches: true }) },
+        window: { matchMedia: () => ({ matches: true }), localStorage: { getItem: (key) => storage.get(key) || null, setItem: (key, value) => storage.set(key, value) } },
         document: {
+            querySelectorAll: () => [],
             body: { dataset: {}, style: { setProperty: (key, value) => properties.set(key, value) } },
             createElement() { return { style: { setProperty: (key, value) => properties.set(key, value) } }; },
             getElementById(id) {
@@ -22,7 +24,7 @@ function setup() {
         Image: class { constructor() { images.push(this); } }
     });
     vm.runInContext(fs.readFileSync(path.join(__dirname, '../scripts.js'), 'utf8'), context);
-    return { context, elements, images, properties };
+    return { context, elements, images, properties, storage };
 }
 
 test('matches condition codes, clear nights and text-only responses', () => {
@@ -52,6 +54,34 @@ test('matches condition codes, clear nights and text-only responses', () => {
     for (const [condition, isDay, expected] of cases) {
         assert.equal(context.getWeatherPhotoKey(condition, isDay), expected, JSON.stringify(condition));
     }
+});
+
+test('converts temperature and wind independently and saves preferences', () => {
+    const { context, storage } = setup();
+    assert.equal(context.formatTemperature(12), '12°C');
+    assert.equal(context.formatWindSpeed(16.09344), '16.1 kph');
+    context.updateWeatherSettings({ target: { name: 'temperatureUnit', value: 'f' } });
+    assert.equal(context.formatTemperature(12), '53.6°F');
+    assert.equal(context.formatTemperature(-40), '-40°F');
+    assert.equal(context.formatWindSpeed(16.09344), '16.1 kph');
+    context.updateWeatherSettings({ target: { name: 'windUnit', value: 'mph' } });
+    assert.equal(context.formatWindSpeed(16.09344), '10 mph');
+    assert.equal(context.formatWindSpeed(0), '0 mph');
+    assert.deepEqual(JSON.parse(storage.get('playground-weather-units')), { temperature: 'f', wind: 'mph' });
+});
+
+test('restores saved units and rejects invalid or corrupt preferences', () => {
+    const saved = setup('{"temperature":"f","wind":"mph"}').context;
+    assert.equal(saved.formatTemperature(0), '32°F');
+    assert.equal(saved.formatWindSpeed(1.609344), '1 mph');
+    for (const value of ['not JSON', '{"temperature":"kelvin","wind":"knots"}', 'null']) {
+        const { context } = setup(value);
+        assert.equal(context.formatTemperature(0), '0°C');
+        assert.equal(context.formatWindSpeed(10), '10 kph');
+    }
+    saved.window.localStorage.setItem = () => { throw new Error('Storage blocked'); };
+    assert.doesNotThrow(() => saved.updateWeatherSettings({ target: { name: 'temperatureUnit', value: 'c' } }));
+    assert.equal(saved.formatTemperature(0), '0°C');
 });
 
 test('photo and photographer credit change together after image load', () => {

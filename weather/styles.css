@@ -54,6 +54,29 @@ body {
     font-size: 0.82rem;
 }
 
+.panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+.panel-heading .eyebrow { margin: 0; }
+.settings-button { width: 40px; min-width: 40px; height: 40px; min-height: 40px; padding: 0; flex-shrink: 0; }
+.settings-button svg { width: 20px; height: 20px; }
+button:focus-visible, .unit-options input:focus-visible + span { outline: 3px solid #a8cfc3; outline-offset: 3px; }
+.settings-dialog { width: min(420px, calc(100% - 32px)); max-height: calc(100dvh - 32px); padding: 24px; border: 1px solid #d9e0dc; border-radius: 8px; background: #f8faf9; color: #232e2a; box-shadow: 0 24px 80px #0006; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; overflow-y: auto; }
+.settings-dialog::backdrop { background: rgba(8, 15, 20, .65); }
+.settings-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+.settings-heading h2 { margin: 0; font-size: 20px; font-weight: 600; }
+.settings-heading button { background: transparent; color: #394c43; }
+.settings-heading button:hover { background: #e7ede9; }
+.unit-setting { margin: 0 0 24px; padding: 0; border: 0; min-width: 0; }
+.unit-setting legend { font-size: 13px; font-weight: 600; padding: 0; margin-bottom: 10px; }
+.unit-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border: 1px solid #c6d2cb; border-radius: 4px; overflow: hidden; }
+.unit-options label { position: relative; cursor: pointer; min-width: 0; }
+.unit-options label + label { border-left: 1px solid #c6d2cb; }
+.unit-options input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.unit-options label > span { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px; min-height: 48px; padding: 10px 8px; font-size: 13px; background: #fff; }
+.unit-options input:checked + span { background: #355d51; color: #fff; }
+.unit-options input:focus-visible + span { outline-offset: -3px; }
+.unit-symbol { font-size: 12px; opacity: .8; }
+#doneSettingsButton { width: 100%; min-height: 44px; }
+
 h1 {
     margin: 0;
     font-size: clamp(2.6rem, 7vw, 4.4rem);

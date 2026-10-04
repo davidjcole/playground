@@ -6,6 +6,7 @@ Small static web page for checking the current weather for a user-entered locati
 
 - Lets a user enter a city or place name.
 - Fetches current weather data from WeatherAPI.
+- A settings dialog switches temperature between Celsius and Fahrenheit and wind speed between kph and mph. Preferences are saved on the device and update existing results without another weather request. Clothing recommendations always use the underlying Celsius temperature.
 - Changes the background photo to match the current condition, including clear nights, with linked photographer and Unsplash credits.
 - Displays:
   - location
@@ -41,7 +42,7 @@ Photos are bundled locally; no Unsplash API key or runtime image service is requ
 | Partly cloudy, cloudy, overcast, unknown | [Billy Huynh](https://unsplash.com/@billy_huy) | [Cloudy sky](https://unsplash.com/photos/v9bnfMCyKbg) |
 | Rain, drizzle, freezing rain; initial background | [Osman Rana](https://unsplash.com/@osmanrana) | [Rainy street](https://unsplash.com/photos/GXEZuWo5m4I) |
 | Snow, sleet, ice pellets, blizzard | [Cloris Ying](https://unsplash.com/@clorisyy) | [Snow-covered trees](https://unsplash.com/photos/J1LYc-oMA4k) |
-| Fog, mist, haze, smoke, dust | [James Kelly-Smith](https://unsplash.com/@jksphotographer) | [Foggy forest](https://unsplash.com/photos/D2KCi3AzRQ8) |
+| Fog, mist, haze, smoke, dust | [Dave Hoefler](https://unsplash.com/@iamthedave) | [Evergreen forest shrouded in fog](https://unsplash.com/photos/evergreen-forest-shrouded-in-fog-od287vQyufw) |
 | Thunderstorms, including rain or snow with thunder | [Yifu Wu](https://unsplash.com/@nnonno) | [Lightning storm](https://unsplash.com/photos/9mjivTB4YMs) |
 
 The original rain image remains in this folder. The six new JPEGs are in `images/`, resized to 1920 x 1280. Photographer and individual photo links are also displayed in the page footer and open in new tabs. Loaded photos crossfade over 900 ms; reduced-motion preferences switch photos immediately.
