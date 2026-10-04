@@ -20,7 +20,7 @@ This repository contains a set of lightweight HTML, CSS, and JavaScript mini-pro
 - `wordcounter/`: a richer word counter with readability and keyword density metrics
 - `weather/`: a weather lookup tool with clothing suggestions
 - `zuzu-booker/`: a booking cost calculator with holiday-aware pricing
-- `jokes/`, `drawtheline/`, `recycle/`, `prompt-examples/`: other small experiments and utilities
+- `jokes/`, `recycle/`, `prompt-examples/`: other small experiments and utilities
 
 ## Hosting
 
