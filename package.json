@@ -7,7 +7,8 @@
     "postinstall": "node scripts/prepare-pdf-assets.js",
     "start": "node scripts/prepare-pdf-assets.js && node server.js",
     "test:pdf": "node --test pdf-optimiser/tests/*.test.js",
-    "test:weather": "node --test weather/tests/*.test.js"
+    "test:weather": "node --test weather/tests/*.test.js",
+    "test:server": "node --test tests/server.test.js"
   },
   "engines": {
     "node": ">=20"

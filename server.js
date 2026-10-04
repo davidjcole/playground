@@ -5,6 +5,41 @@ const { URL } = require("url");
 
 const PORT = Number(process.env.PORT) || 3000;
 const ROOT = __dirname;
+const PUBLIC_FILES = new Set([
+  "index.html", "styles.css",
+  "image-optimiser/index.html", "image-optimiser/app.js", "image-optimiser/styles.css",
+  "image-optimiser/vendor/cropper.min.css", "image-optimiser/vendor/cropper.min.js",
+  "image-optimiser/vendor/lucide.min.js", "image-optimiser/vendor/CROPPER-LICENSE.txt",
+  "image-optimiser/vendor/LUCIDE-LICENSE.txt",
+  "jokes/index.html", "jokes/app.js",
+  "pdf-optimiser/index.html", "pdf-optimiser/app.js", "pdf-optimiser/core.js",
+  "pdf-optimiser/worker.js", "pdf-optimiser/styles.css",
+  "pdf-optimiser/vendor/ghostscript-wasm/gs.js", "pdf-optimiser/vendor/ghostscript-wasm/gs.wasm",
+  "pdf-optimiser/vendor/ghostscript-wasm/LICENSE",
+  "pdf-optimiser/vendor/pdf-lib/pdf-lib.min.js", "pdf-optimiser/vendor/pdf-lib/LICENSE.md",
+  "pdf-optimiser/vendor/pdfjs-dist/pdf.min.mjs", "pdf-optimiser/vendor/pdfjs-dist/pdf.worker.min.mjs",
+  "pdf-optimiser/vendor/pdfjs-dist/LICENSE",
+  "pdf-optimiser/vendor/pdfjs-dist/cmaps/LICENSE",
+  "pdf-optimiser/vendor/pdfjs-dist/standard_fonts/LICENSE_FOXIT",
+  "pdf-optimiser/vendor/pdfjs-dist/standard_fonts/LICENSE_LIBERATION",
+  "percentage-calculator/index.html", "percentage-calculator/app.js",
+  "percentage-calculator/styles.css", "percentage-calculator/copied-icon.png",
+  "prompt-examples/index.html", "prompt-examples/app.js", "prompt-examples/prompt-library-complete.json",
+  "readability/index.html", "readability/app.js", "recycle/index.html",
+  "weather/index.html", "weather/scripts.js", "weather/styles.css",
+  "weather/osman-rana-GXEZuWo5m4I-unsplash.jpg",
+  "weather/images/sunny.jpg", "weather/images/cloudy.jpg", "weather/images/clear-night.jpg",
+  "weather/images/snow.jpg", "weather/images/thunderstorm.jpg", "weather/images/fog.jpg",
+  "wordcounter/index.html", "wordcounter/app.js", "wordcounter/styles.css",
+  "zuzu-booker/index.html", "zuzu-booker/script.js", "zuzu-booker/styles.css"
+]);
+
+function isPublicFile(relativePath) {
+  return PUBLIC_FILES.has(relativePath) ||
+    /^pdf-optimiser\/vendor\/pdfjs-dist\/cmaps\/[A-Za-z0-9_-]+\.bcmap$/.test(relativePath) ||
+    /^pdf-optimiser\/vendor\/pdfjs-dist\/standard_fonts\/[A-Za-z0-9_-]+\.(pfb|ttf)$/.test(relativePath);
+}
+
 const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
 const WEATHER_CACHE_TTL_MS = 5 * 60 * 1000;
 const WEATHER_RATE_LIMIT_WINDOW_MS = 60 * 1000;
@@ -172,25 +207,39 @@ function writeRateLimitedJson(res, retryAfterSeconds, payload) {
 }
 
 function resolveStaticPath(requestPath) {
-  const decodedPath = decodeURIComponent(requestPath);
-  const safePath = path.normalize(decodedPath).replace(/^(\.\.[/\\])+/, "");
-  const relativePath = safePath.replace(/^[/\\]+/, "");
-  const fullPath = path.join(ROOT, relativePath);
-
-  if (!fullPath.startsWith(ROOT)) {
+  let decodedPath;
+  try {
+    decodedPath = decodeURIComponent(requestPath);
+  } catch {
+    return null;
+  }
+  if (!decodedPath.startsWith("/") || /[\\\x00]/.test(decodedPath) ||
+      decodedPath.split("/").some((segment) => segment.startsWith("."))) {
     return null;
   }
 
-  if (fs.existsSync(fullPath) && fs.statSync(fullPath).isDirectory()) {
-    return {
-      isDirectory: true,
-      filePath: path.join(fullPath, "index.html")
-    };
+  const requestedFile = decodedPath.slice(1).replace(/\/$/, "");
+  const directoryIndex = requestedFile ? `${requestedFile}/index.html` : "index.html";
+  const isDirectory = PUBLIC_FILES.has(directoryIndex);
+  const relativePath = isDirectory ? directoryIndex : requestedFile;
+  if (!isPublicFile(relativePath)) {
+    return null;
+  }
+  const fullPath = path.join(ROOT, relativePath);
+  // Refuse symlinks, including symlinked parent directories, at public URLs.
+  try {
+    if (fs.realpathSync(fullPath) !== fullPath || !fs.statSync(fullPath).isFile()) {
+      return null;
+    }
+  } catch (error) {
+    if (error.code !== "ENOENT") {
+      return null;
+    }
   }
 
   return {
-    isDirectory: false,
-    filePath: relativePath === "" ? path.join(ROOT, "index.html") : fullPath
+    isDirectory,
+    filePath: fullPath
   };
 }
 
@@ -344,6 +393,10 @@ const server = http.createServer(async (req, res) => {
   sendFile(res, resolvedPath.filePath);
 });
 
-server.listen(PORT, () => {
-  console.log(`Playground server listening on port ${PORT}`);
-});
+if (require.main === module) {
+  server.listen(PORT, () => {
+    console.log(`Playground server listening on port ${PORT}`);
+  });
+}
+
+module.exports = server;

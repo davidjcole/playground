@@ -45,6 +45,7 @@ The weather lookup requires this Railway environment variable:
 
 The current Railway-hosted setup includes a few basic security controls:
 
+- Static serving uses an explicit public asset allowlist in `server.js`. New site assets must be added there; repository metadata, server code, tests, configuration and symlinks are not served.
 - WeatherAPI key is stored server-side in `WEATHER_API_KEY` and is not exposed in browser-delivered JavaScript
 - `/api/weather` validates and normalizes the `q` location parameter before calling the upstream API
 - `/api/weather` includes simple per-IP rate limiting to reduce abuse and quota burn
