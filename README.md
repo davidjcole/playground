@@ -14,6 +14,7 @@ This repository contains a set of lightweight HTML, CSS, and JavaScript mini-pro
 
 - `index.html` and `styles.css`: landing page for the playground
 - `image-optimiser/`: private browser-based cropping, resizing, and JPEG/PNG/WebP export
+- `pdf-optimiser/`: private browser-based PDF compression, page comparison, and optional metadata removal
 - `percentage-calculator/`: a simple percentage calculator for common percentage and change calculations
 - `readability/`: a Gunning Fog Index readability calculator
 - `wordcounter/`: a richer word counter with readability and keyword density metrics
@@ -73,6 +74,8 @@ npm start
 The app will run on `http://localhost:3000` by default, or on the port provided by Railway via `PORT`.
 
 ## Notes
+
+- PDF Optimiser runs at `/pdf-optimiser/`. PDFs stay on the device. It supports one PDF up to 50 MB and 200 pages, three compression presets, page previews, and document metadata removal. Signed, encrypted and interactive form PDFs are rejected. Run `npm ci` to install and prepare the locally served PDF engines, and `npm run test:pdf` to verify the compression pipeline. See `pdf-optimiser/README.md` for limitations and dependency licensing.
 
 - Image Optimiser runs at `/image-optimiser/`. Images are processed in the browser and are not uploaded to the server. It accepts JPEG, PNG, WebP, GIF, BMP, and browser-supported AVIF. Animated images become a single still frame; HEIC/TIFF are not supported. Inputs are limited to 40 MB, 40 megapixels, and 16,384 pixels per side; exports are limited to 4096 pixels per side and never upscaled. PNG export is lossless; quality controls apply to JPEG/WebP. File sizes are measured from the generated output, which can be larger than the source. Cropper.js 1.6.2 and Lucide 0.468.0 are bundled locally with their licences under `image-optimiser/vendor/`.
 

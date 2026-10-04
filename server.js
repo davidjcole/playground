@@ -21,6 +21,8 @@ const MIME_TYPES = {
   ".css": "text/css; charset=utf-8",
   ".html": "text/html; charset=utf-8",
   ".js": "application/javascript; charset=utf-8",
+  ".mjs": "application/javascript; charset=utf-8",
+  ".wasm": "application/wasm",
   ".json": "application/json; charset=utf-8",
   ".png": "image/png",
   ".jpg": "image/jpeg",
@@ -60,10 +62,14 @@ function sendFile(res, filePath) {
       return;
     }
 
-    res.writeHead(200, buildSecurityHeaders({
+    const headers = buildSecurityHeaders({
       "Content-Type": contentType,
       "Cache-Control": "no-store"
-    }));
+    });
+    if (filePath.startsWith(path.join(ROOT, "pdf-optimiser") + path.sep)) {
+      headers["Content-Security-Policy"] = headers["Content-Security-Policy"].replace("script-src 'self'", "script-src 'self' 'wasm-unsafe-eval'");
+    }
+    res.writeHead(200, headers);
     res.end(data);
   });
 }

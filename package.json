@@ -4,9 +4,16 @@
   "version": "1.0.0",
   "description": "Static playground site with a small Railway-friendly proxy server",
   "scripts": {
-    "start": "node server.js"
+    "postinstall": "node scripts/prepare-pdf-assets.js",
+    "start": "node scripts/prepare-pdf-assets.js && node server.js",
+    "test:pdf": "node --test pdf-optimiser/tests/*.test.js"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@jspawn/ghostscript-wasm": "0.0.2",
+    "pdf-lib": "1.17.1",
+    "pdfjs-dist": "4.10.38"
   }
 }

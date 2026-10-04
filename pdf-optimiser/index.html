@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Compress PDFs privately in your browser. Compare quality and file size, and remove document metadata.">
+    <title>PDF Optimiser | Thinking Systems Playground</title>
+    <link rel="icon" href="https://thinkingsystems.co.uk/assets/favicon.ico">
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="/image-optimiser/vendor/lucide.min.js"></script>
+    <script type="module" src="app.js"></script>
+</head>
+<body>
+    <header class="site-header"><nav class="page-width" aria-label="Primary">
+        <a href="/" class="back-link"><i data-lucide="arrow-left"></i> Playground</a>
+        <a href="https://thinkingsystems.co.uk/">Thinking Systems</a>
+    </nav></header>
+    <main class="page-width">
+        <header class="page-heading">
+            <div><p class="eyebrow">DOCUMENT TOOLS</p><h1>PDF Optimiser</h1></div>
+            <p class="privacy"><i data-lucide="shield-check"></i> Your PDFs stay on your device</p>
+        </header>
+        <div id="message" class="message" role="status" aria-live="polite" hidden></div>
+        <input type="file" id="file-input" accept="application/pdf,.pdf" hidden>
+        <section id="upload" class="upload-surface" aria-label="Choose PDF">
+            <div class="upload-icon"><i data-lucide="file-text"></i></div>
+            <h2>Choose a PDF</h2>
+            <p id="upload-status">Up to 50 MB / 200 pages</p>
+            <button class="primary" id="choose"><i data-lucide="plus"></i> Choose PDF</button>
+            <p class="upload-note">or drop a file here</p>
+        </section>
+        <section id="editor" class="editor" aria-label="PDF workspace" hidden>
+            <div class="workspace">
+                <div class="file-bar">
+                    <div class="file-info"><span class="pdf-badge">PDF</span><div><strong id="file-name"></strong><span id="file-info"></span></div></div>
+                    <button id="replace" class="secondary" title="Choose another PDF"><i data-lucide="folder-open"></i><span>Replace</span></button>
+                </div>
+                <div class="preview-toolbar">
+                    <div class="tabs" role="tablist" aria-label="Preview version">
+                        <button id="original-tab" role="tab" aria-selected="true" aria-controls="page-preview">Original</button>
+                        <button id="output-tab" role="tab" aria-selected="false" aria-controls="page-preview" disabled>Optimised</button>
+                    </div>
+                    <div class="page-controls">
+                        <button id="previous" class="icon-button" title="Previous page" aria-label="Previous page" disabled><i data-lucide="chevron-left"></i></button>
+                        <span id="page-count">1 / 1</span>
+                        <button id="next" class="icon-button" title="Next page" aria-label="Next page" disabled><i data-lucide="chevron-right"></i></button>
+                    </div>
+                </div>
+                <div id="page-preview" class="preview-stage" role="tabpanel" aria-labelledby="original-tab" aria-busy="false">
+                    <canvas id="preview" aria-label="PDF page preview" hidden></canvas>
+                    <p id="preview-status" role="status">Preparing preview...</p>
+                </div>
+                <div class="preview-footer"><span id="preview-label">Original document</span><span id="page-dimensions"></span></div>
+            </div>
+            <aside class="settings-panel" aria-label="Optimisation settings">
+                <h2>Compression</h2>
+                <fieldset id="settings">
+                    <legend class="sr-only">Compression settings</legend>
+                    <div class="presets">
+                        <label><input type="radio" name="preset" value="light"><span><strong>High quality</strong><small>300 dpi / light compression</small></span></label>
+                        <label><input type="radio" name="preset" value="balanced" checked><span><strong>Balanced</strong><small>150 dpi / everyday documents</small></span><span class="recommended">Default</span></label>
+                        <label><input type="radio" name="preset" value="small"><span><strong>Smallest file</strong><small>72 dpi / screen viewing</small></span></label>
+                    </div>
+                    <label class="metadata-option"><input type="checkbox" id="remove-metadata"><span>Remove document metadata<small>Author, title, dates and XMP data</small></span></label>
+                    <label class="filename-label" for="export-name">File name</label>
+                    <div class="filename-input"><input id="export-name" type="text" maxlength="100" value="document-optimised"><span>.pdf</span></div>
+                </fieldset>
+                <button id="optimise" class="primary full-width"><i data-lucide="minimize-2"></i><span>Optimise PDF</span></button>
+                <div id="processing" class="processing" hidden><progress aria-label="PDF optimisation progress"></progress><p id="processing-status" role="status">Loading compression engine...</p><button id="cancel" class="secondary full-width"><i data-lucide="x"></i> Cancel</button></div>
+                <div id="result" class="result" aria-live="polite">
+                    <h2>File size</h2>
+                    <dl class="size-comparison"><div><dt>Original</dt><dd id="original-size">-</dd></div><div><dt>Optimised</dt><dd id="output-size">-</dd></div></dl>
+                    <div class="size-track" aria-hidden="true"><span id="size-bar"></span></div>
+                    <p id="saving" class="saving">Ready to optimise</p>
+                    <button id="download" class="primary full-width" disabled><i data-lucide="download"></i><span>Download PDF</span></button>
+                </div>
+                <p class="document-note">Compression can change image quality and remove comments or accessibility tags. Review the optimised pages before using the PDF.</p>
+            </aside>
+        </section>
+        <footer class="tool-footer"><span>Thinking Systems Playground</span><span>Private, local PDF processing</span></footer>
+    </main>
+</body>
+</html>
