@@ -57,6 +57,8 @@ test("every application and representative browser assets remain accessible", as
     "/weather/scripts.js", "/weather/images/sunny.jpg",
     "/prompt-examples/prompt-library-complete.json", "/pdf-optimiser/core.js",
     "/pdf-optimiser/worker.js", "/image-optimiser/vendor/lucide.min.js",
+    "/pdf-optimiser/organiser.js", "/pdf-optimiser/ranges.js",
+    "/pdf-optimiser/vendor/fflate/index.js", "/pdf-optimiser/vendor/fflate/LICENSE",
     "/image-optimiser/vendor/cropper.min.css", "/image-optimiser/vendor/cropper.min.js",
     "/pdf-optimiser/vendor/ghostscript-wasm/gs.js", "/pdf-optimiser/vendor/ghostscript-wasm/gs.wasm",
     "/pdf-optimiser/vendor/pdf-lib/pdf-lib.min.js", "/pdf-optimiser/vendor/pdfjs-dist/pdf.min.mjs",

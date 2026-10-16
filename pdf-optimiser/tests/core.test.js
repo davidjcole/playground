@@ -1,7 +1,7 @@
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
-const { PDFDocument, PDFName, PDFString, StandardFonts } = require("pdf-lib");
+const { PDFDocument, PDFName, PDFString, StandardFonts, degrees } = require("pdf-lib");
 const core = require("../core.js");
 const initialise = require("@jspawn/ghostscript-wasm");
 
@@ -91,4 +91,19 @@ test("discards an output with missing pages", async () => {
   const pdf = await PDFDocument.create();
   pdf.addPage([595.28, 841.89]);
   await assert.rejects(core.finish(source, await pdf.save(), false), /page count/);
+});
+
+test('accepts compressed rotated pages with equivalent visible dimensions', async () => {
+  const pdf = await PDFDocument.load(await fixture());
+  pdf.getPages()[0].setRotation(degrees(90));
+  const source = await pdf.save();
+  const compressed = await compress(source, 'balanced');
+  assert.equal((await core.finish(source, compressed, false)).pages, 3);
+});
+
+test('still rejects a genuine change to visible page dimensions', async () => {
+  const source = await fixture();
+  const pdf = await PDFDocument.load(source);
+  pdf.getPages()[0].setSize(400, 400);
+  await assert.rejects(core.finish(source, await pdf.save(), false), /page dimensions/);
 });

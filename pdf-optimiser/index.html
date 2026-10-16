@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Compress PDFs privately in your browser. Compare quality and file size, and remove document metadata.">
+    <meta name="description" content="Compress, organise, merge and split PDFs privately in your browser.">
     <title>PDF Optimiser | Thinking Systems Playground</title>
     <link rel="icon" href="https://thinkingsystems.co.uk/assets/favicon.ico">
     <link rel="stylesheet" href="styles.css">
@@ -21,6 +21,11 @@
             <p class="privacy"><i data-lucide="shield-check"></i> Your PDFs stay on your device</p>
         </header>
         <div id="message" class="message" role="status" aria-live="polite" hidden></div>
+        <nav class="tool-modes" aria-label="PDF tool">
+            <button id="compress-mode" type="button" aria-pressed="true"><i data-lucide="minimize-2"></i> Compress</button>
+            <button id="organise-mode" type="button" aria-pressed="false"><i data-lucide="files"></i> Organise, merge &amp; split</button>
+        </nav>
+        <div id="compression-view">
         <input type="file" id="file-input" accept="application/pdf,.pdf" hidden>
         <section id="upload" class="upload-surface" aria-label="Choose PDF">
             <div class="upload-icon"><i data-lucide="file-text"></i></div>
@@ -29,6 +34,64 @@
             <button class="primary" id="choose"><i data-lucide="plus"></i> Choose PDF</button>
             <p class="upload-note">or drop a file here</p>
         </section>
+        </div>
+        <section id="page-tools" hidden aria-label="Page organiser">
+            <input type="file" id="pages-input" accept="application/pdf,.pdf" multiple hidden>
+            <section id="pages-upload" class="upload-surface" aria-label="Choose PDFs to organise">
+                <div class="upload-icon"><i data-lucide="files"></i></div>
+                <h2>Choose PDFs</h2>
+                <p>Up to 50 MB combined / 200 pages</p>
+                <button id="pages-choose" class="primary"><i data-lucide="plus"></i> Choose PDFs</button>
+                <p class="upload-note">or drop files here</p>
+            </section>
+            <div id="pages-workspace" hidden>
+                <div class="pages-file-bar">
+                    <div class="pages-summary"><strong id="pages-summary"></strong><span id="pages-sources"></span></div>
+                    <div class="pages-file-actions"><button id="pages-add" class="secondary"><i data-lucide="plus"></i> Add PDFs</button><button id="pages-replace" class="icon-button" title="Replace all PDFs" aria-label="Replace all PDFs"><i data-lucide="folder-open"></i></button></div>
+                </div>
+                <div class="page-layout">
+                    <div class="pages-main">
+                        <div class="pages-toolbar" role="toolbar" aria-label="Page actions">
+                            <label class="select-all"><input id="pages-select-all" type="checkbox"> All</label><span id="pages-selection" role="status">0 selected</span>
+                            <div class="page-action-group">
+                                <button id="pages-left" class="icon-button" title="Move selected pages earlier" aria-label="Move selected pages earlier"><i data-lucide="arrow-left"></i></button>
+                                <button id="pages-right" class="icon-button" title="Move selected pages later" aria-label="Move selected pages later"><i data-lucide="arrow-right"></i></button>
+                                <button id="pages-rotate" class="icon-button" title="Rotate selected pages clockwise" aria-label="Rotate selected pages clockwise"><i data-lucide="rotate-cw"></i></button>
+                                <button id="pages-duplicate" class="icon-button" title="Duplicate selected pages" aria-label="Duplicate selected pages"><i data-lucide="copy"></i></button>
+                                <button id="pages-delete" class="icon-button" title="Delete selected pages" aria-label="Delete selected pages"><i data-lucide="trash-2"></i></button>
+                            </div>
+                            <div class="page-action-group">
+                                <button id="pages-undo" class="icon-button" title="Undo page changes" aria-label="Undo page changes"><i data-lucide="undo-2"></i></button>
+                                <button id="pages-redo" class="icon-button" title="Redo page changes" aria-label="Redo page changes"><i data-lucide="redo-2"></i></button>
+                            </div>
+                        </div>
+                        <div id="pages-grid" class="pages-grid" aria-label="Document pages" aria-busy="false"></div>
+                    </div>
+                    <aside class="page-export" aria-label="Page export">
+                        <h2>Assembled document</h2>
+                        <label for="pages-name" class="filename-label">File name</label>
+                        <div class="filename-input"><input id="pages-name" type="text" maxlength="100" value="document-assembled"><span>.pdf</span></div>
+                        <button id="pages-download" class="primary full-width"><i data-lucide="download"></i> Download PDF</button>
+                        <button id="pages-compress" class="secondary full-width"><i data-lucide="minimize-2"></i> Open in optimiser</button>
+                        <button id="pages-extract" class="secondary full-width"><i data-lucide="file-output"></i> Extract selected</button>
+                        <div class="split-section">
+                            <h2>Split by page range</h2>
+                            <label for="pages-ranges" class="filename-label">Pages</label>
+                            <input id="pages-ranges" type="text" placeholder="1-3, 5, 7-9" autocomplete="off" aria-describedby="pages-range-status">
+                            <p id="pages-range-status" class="range-status" aria-live="polite"></p>
+                            <button id="pages-range-extract" class="secondary full-width"><i data-lucide="file-output"></i> Extract as one PDF</button>
+                            <button id="pages-split" class="secondary full-width"><i data-lucide="split"></i> Split into ZIP</button>
+                        </div>
+                        <div id="pages-progress" class="processing" hidden><progress aria-label="PDF page processing"></progress><p id="pages-progress-status" role="status">Preparing pages...</p><button id="pages-cancel" class="secondary full-width"><i data-lucide="x"></i> Cancel</button></div>
+                        <p class="document-note">Page exports may omit bookmarks, attachments and accessibility tags. Signed, password-protected and interactive form PDFs are not supported.</p>
+                    </aside>
+                </div>
+            </div>
+        </section>
+        <dialog id="page-dialog" aria-labelledby="page-dialog-title">
+            <div class="page-dialog-heading"><h2 id="page-dialog-title">Page preview</h2><button id="page-dialog-close" class="icon-button" title="Close preview" aria-label="Close preview"><i data-lucide="x"></i></button></div>
+            <div class="page-dialog-stage"><canvas id="page-dialog-canvas" aria-label="Selected page preview"></canvas><p id="page-dialog-status" role="status"></p></div>
+        </dialog>
         <section id="editor" class="editor" aria-label="PDF workspace" hidden>
             <div class="workspace">
                 <div class="file-bar">

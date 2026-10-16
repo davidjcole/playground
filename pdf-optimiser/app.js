@@ -1,11 +1,30 @@
 import * as pdfjs from "./vendor/pdfjs-dist/pdf.min.mjs";
+import { createOrganiser } from './organiser.js';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL("./vendor/pdfjs-dist/pdf.worker.min.mjs", import.meta.url).href;
 const $ = (id) => document.getElementById(id);
 const MAX_BYTES = 50 * 1024 * 1024;
-let sourceBytes, sourceDocument, outputDocument, outputBytes, outputUrl;
+let sourceFile, sourceBytes, sourceDocument, outputDocument, outputBytes, outputUrl;
 let page = 1, version = "original", busy = false, activeWorker, workerReject, workerTimer;
 let renderTask, renderGeneration = 0, loadGeneration = 0;
+let currentMode = 'compress';
+const organiser = createOrganiser({ openDocument, message, onOptimise: async (file) => {
+  if (await loadFile(file)) await setMode('compress', true);
+} });
+
+async function setMode(mode, force = false) {
+  if (!force && (busy || organiser.isBusy())) return;
+  currentMode = mode;
+  const compress = mode === 'compress';
+  $('compress-mode').setAttribute('aria-pressed', String(compress));
+  $('organise-mode').setAttribute('aria-pressed', String(!compress));
+  $('compression-view').hidden = !compress;
+  $('editor').hidden = !compress || !sourceBytes;
+  $('page-tools').hidden = compress;
+  message('');
+  if (!compress && !organiser.hasDocuments() && sourceFile) await organiser.loadFiles([sourceFile], true);
+  if (compress && sourceBytes) renderPreview();
+}
 
 function formatSize(bytes) {
   if (bytes < 1024) return `${bytes} B`;
@@ -44,6 +63,8 @@ function stopWorker(reason) {
 
 function setBusy(value, loading = false) {
   busy = value;
+  $('compress-mode').disabled = value || organiser.isBusy();
+  $('organise-mode').disabled = value || organiser.isBusy();
   $("choose").disabled = value;
   $("replace").disabled = value;
   $("settings").disabled = value;
@@ -95,6 +116,7 @@ async function loadFile(file) {
     renderTask?.cancel();
     sourceDocument?.destroy();
     sourceBytes = bytes;
+    sourceFile = file;
     sourceDocument = nextDocument;
     page = 1;
     $("file-name").textContent = file.name;
@@ -104,9 +126,11 @@ async function loadFile(file) {
     $("upload").hidden = true;
     $("editor").hidden = false;
     selectVersion("original");
+    return true;
   } catch (error) {
     nextDocument?.destroy();
     message(error.message || "This PDF could not be opened.", true);
+    return false;
   } finally {
     setBusy(false);
     $("file-input").value = "";
@@ -192,6 +216,8 @@ async function optimise() {
 }
 
 $("choose").addEventListener("click", () => $("file-input").click());
+$('compress-mode').addEventListener('click', () => setMode('compress'));
+$('organise-mode').addEventListener('click', () => setMode('organise'));
 $("replace").addEventListener("click", () => $("file-input").click());
 $("file-input").addEventListener("change", (event) => loadFile(event.target.files[0]));
 $("optimise").addEventListener("click", optimise);
@@ -218,7 +244,8 @@ document.addEventListener("dragleave", (event) => { if (!event.relatedTarget) $(
 document.addEventListener("drop", (event) => {
   event.preventDefault();
   $("upload").classList.remove("dragging");
-  if (busy) return;
+  if (busy || organiser.isBusy() || !event.dataTransfer.files.length) return;
+  if (currentMode === 'organise') { organiser.loadFiles(event.dataTransfer.files, !organiser.hasDocuments()); return; }
   if (event.dataTransfer.files.length !== 1) { message("Choose one PDF at a time.", true); return; }
   loadFile(event.dataTransfer.files[0]);
 });

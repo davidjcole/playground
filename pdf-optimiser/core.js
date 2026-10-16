@@ -1,6 +1,7 @@
 (function (root) {
   const library = typeof module === "object" ? require("pdf-lib") : root.PDFLib;
-  const { PDFDocument, PDFDict, PDFName } = library;
+  const { PDFDocument, PDFDict, PDFName, degrees } = library;
+  const { parseRanges } = typeof module === 'object' ? require('./ranges.js') : root.PDFPageRanges;
   const MAX_BYTES = 50 * 1024 * 1024;
   const MAX_PAGES = 200;
   const presets = { light: { setting: "printer", dpi: 300 }, balanced: { setting: "ebook", dpi: 150 }, small: { setting: "screen", dpi: 72 } };
@@ -22,7 +23,7 @@
       const type = object.get(PDFName.of("Type"));
       const fieldType = object.get(PDFName.of("FT"));
       if (String(type) === "/Sig" || String(fieldType) === "/Sig" || object.has(PDFName.of("ByteRange"))) {
-        throw new Error("Signed PDFs are not supported. Compression would invalidate their digital signatures.");
+        throw new Error("Signed PDFs are not supported. Changing the document would invalidate its digital signatures.");
       }
       if (String(object.get(PDFName.of("Subtype"))) === "/Widget") {
         throw new Error("Interactive forms are not supported. Export a flattened copy first.");
@@ -48,9 +49,13 @@
     if (source.pages !== output.pages) throw new Error("Compression changed the page count. The output has been discarded.");
     const beforePages = source.document.getPages();
     const afterPages = output.document.getPages();
+    const visibleSize = (page) => {
+      const { width, height } = page.getCropBox();
+      return Math.abs(page.getRotation().angle) % 180 === 90 ? { width: height, height: width } : { width, height };
+    };
     if (beforePages.some((page, index) => {
-      const before = page.getSize();
-      const after = afterPages[index].getSize();
+      const before = visibleSize(page);
+      const after = visibleSize(afterPages[index]);
       return Math.abs(before.width - after.width) > 1 || Math.abs(before.height - after.height) > 1;
     })) throw new Error("Compression changed the page dimensions. The output has been discarded.");
     let result = compressed;
@@ -69,7 +74,34 @@
     const keptOriginal = !removeMetadata && result.length >= original.length;
     return { bytes: keptOriginal ? original : result, keptOriginal, pages: source.pages };
   }
-  const api = { inspect, argumentsFor, finish, MAX_BYTES, MAX_PAGES };
+  async function prepareSources(sources) {
+    if (!Array.isArray(sources) || !sources.length || sources.length > MAX_PAGES) throw new Error("Choose PDFs to assemble.");
+    if (sources.reduce((total, bytes) => total + bytes.length, 0) > MAX_BYTES) throw new Error("Choose PDFs totalling no more than 50 MB.");
+    return Promise.all(sources.map(async (bytes) => (await inspect(bytes)).document));
+  }
+
+  async function assembleDocuments(documents, plan) {
+    if (!Array.isArray(plan) || !plan.length || plan.length > MAX_PAGES) throw new Error("Export between 1 and 200 pages.");
+    const output = await PDFDocument.create();
+    for (const entry of plan) {
+      if (!Number.isInteger(entry.source) || !Number.isInteger(entry.page) || ![0, 90, 180, 270].includes(entry.rotation)) throw new Error("Invalid page selection.");
+      const document = documents[entry.source];
+      if (!document || entry.page < 0 || entry.page >= document.getPageCount()) throw new Error("A selected page could not be found.");
+      // Copy separately so duplicated pages have independent rotation dictionaries.
+      const [copy] = await output.copyPages(document, [entry.page]);
+      copy.setRotation(degrees((copy.getRotation().angle + entry.rotation) % 360));
+      output.addPage(copy);
+    }
+    const bytes = await output.save({ useObjectStreams: true, updateFieldAppearances: false });
+    if (bytes.length > MAX_BYTES) throw new Error("The assembled PDF exceeds 50 MB. Export fewer pages.");
+    return bytes;
+  }
+
+  async function assemble(sources, plan) {
+    return assembleDocuments(await prepareSources(sources), plan);
+  }
+
+  const api = { inspect, argumentsFor, finish, parseRanges, prepareSources, assembleDocuments, assemble, MAX_BYTES, MAX_PAGES };
   if (typeof module === "object") module.exports = api;
   else root.PDFOptimiser = api;
 })(globalThis);

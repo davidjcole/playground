@@ -14,6 +14,8 @@ const PUBLIC_FILES = new Set([
   "jokes/index.html", "jokes/app.js",
   "pdf-optimiser/index.html", "pdf-optimiser/app.js", "pdf-optimiser/core.js",
   "pdf-optimiser/worker.js", "pdf-optimiser/styles.css",
+  "pdf-optimiser/organiser.js", "pdf-optimiser/ranges.js",
+  "pdf-optimiser/vendor/fflate/index.js", "pdf-optimiser/vendor/fflate/LICENSE",
   "pdf-optimiser/vendor/ghostscript-wasm/gs.js", "pdf-optimiser/vendor/ghostscript-wasm/gs.wasm",
   "pdf-optimiser/vendor/ghostscript-wasm/LICENSE",
   "pdf-optimiser/vendor/pdf-lib/pdf-lib.min.js", "pdf-optimiser/vendor/pdf-lib/LICENSE.md",
