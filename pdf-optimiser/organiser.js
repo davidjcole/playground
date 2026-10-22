@@ -1,6 +1,6 @@
 import './ranges.js';
 
-export function createOrganiser({ openDocument, message, onOptimise }) {
+export function createOrganiser({ openDocument, message, onOptimise, onCorrect }) {
   const $ = (id) => document.getElementById(id);
   const MAX_BYTES = 50 * 1024 * 1024;
   let sources = [], plan = [], selected = new Set(), undo = [], redo = [];
@@ -40,6 +40,7 @@ export function createOrganiser({ openDocument, message, onOptimise }) {
     for (const control of document.querySelectorAll('#page-tools button, #page-tools input')) control.disabled = value;
     $('compress-mode').disabled = value;
     $('organise-mode').disabled = value;
+    $('text-mode').disabled = value;
     $('pages-progress').hidden = !value;
     $('pages-cancel').disabled = false;
     $('pages-upload').setAttribute('aria-busy', String(value));
@@ -250,6 +251,7 @@ export function createOrganiser({ openDocument, message, onOptimise }) {
       setBusy(true); message(''); $('pages-progress-status').textContent = 'Preparing pages...';
       const result = await run({ action: kind === 'split' ? 'split' : 'assemble', sources: sources.map((source) => source.bytes), plan: chosen, ranges: $('pages-ranges').value });
       if (kind === 'compress') await onOptimise(new File([result.bytes], `${filename()}.pdf`, { type: 'application/pdf' }));
+      else if (kind === 'text') await onCorrect(new File([result.bytes], `${filename()}.pdf`, { type: 'application/pdf' }));
       else {
         download(result.bytes, `${filename(kind === 'selected' || kind === 'range' ? '-extract' : '')}.${kind === 'split' ? 'zip' : 'pdf'}`, kind === 'split' ? 'application/zip' : 'application/pdf');
         message(kind === 'split' ? `${result.files.length} PDFs exported in a ZIP.` : `${chosen.length} pages exported.`);
@@ -269,7 +271,7 @@ export function createOrganiser({ openDocument, message, onOptimise }) {
   $('pages-delete').addEventListener('click', () => commit(plan.filter((entry) => !selected.has(entry.id))));
   $('pages-undo').addEventListener('click', () => { if (undo.length) { redo.push(snapshot()); restore(undo.pop()); } });
   $('pages-redo').addEventListener('click', () => { if (redo.length) { undo.push(snapshot()); restore(redo.pop()); } });
-  for (const [id, kind] of Object.entries({ 'pages-download': 'all', 'pages-extract': 'selected', 'pages-compress': 'compress', 'pages-range-extract': 'range', 'pages-split': 'split' })) $(id).addEventListener('click', () => exportPages(kind));
+  for (const [id, kind] of Object.entries({ 'pages-download': 'all', 'pages-extract': 'selected', 'pages-compress': 'compress', 'pages-text': 'text', 'pages-range-extract': 'range', 'pages-split': 'split' })) $(id).addEventListener('click', () => exportPages(kind));
   $('pages-ranges').addEventListener('input', rangeStatus);
   $('pages-cancel').addEventListener('click', () => stop('Page export cancelled. Your source PDFs are unchanged.'));
   $('page-dialog-close').addEventListener('click', () => $('page-dialog').close());

@@ -58,9 +58,25 @@ npm start
 
 Then open [http://localhost:3000/weather/](http://localhost:3000/weather/). Run `npm run test:weather` for condition mapping, image-credit synchronization, failed image loads, and overlapping lookups.
 
-## API Key Note
+## Generate and Configure a Weather API Key
 
-The page requests `/api/weather` on the Node server. Set `WEATHER_API_KEY` in the server environment for live lookups; the key is not exposed to the browser.
+The page requests `/api/weather` on the Node server, which uses a [WeatherAPI.com](https://www.weatherapi.com/) key for live lookups.
+
+1. [Create a WeatherAPI.com account](https://www.weatherapi.com/signup), or sign in if you already have one.
+2. Open [your account dashboard](https://www.weatherapi.com/my/) and copy the API key provided for your account.
+3. To replace an existing key, use **Regenerate** next to the key in the dashboard, then copy the replacement. Update any other applications using the old key as well. See the [WeatherAPI authentication guide](https://www.weatherapi.com/docs/authentication/).
+4. From the repository root, set the key in the server environment and start the app:
+
+   ```bash
+   export WEATHER_API_KEY='paste-your-api-key-here'
+   npm start
+   ```
+
+5. Open [http://localhost:3000/weather/](http://localhost:3000/weather/) and look up a location to check that live weather loads.
+
+For a hosted deployment, set `WEATHER_API_KEY` in the hosting service's environment variables and restart or redeploy the server. Restart a running local server after changing the key, too.
+
+Keep the key in the server environment; do not add it to `scripts.js`, HTML, or source control. The browser calls the server proxy, so the key is not exposed to the browser.
 
 ## Limitations
 

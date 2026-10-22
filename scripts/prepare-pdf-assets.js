@@ -8,7 +8,8 @@ const assets = {
   "@jspawn/ghostscript-wasm": ["gs.js", "gs.wasm", "LICENSE"],
   "pdf-lib": ["dist/pdf-lib.min.js", "LICENSE.md"],
   "pdfjs-dist": ["build/pdf.min.mjs", "build/pdf.worker.min.mjs", "LICENSE"],
-  "fflate": ["umd/index.js", "LICENSE"]
+  "fflate": ["umd/index.js", "LICENSE"],
+  "mupdf": ["dist/mupdf.js", "dist/mupdf-wasm.js", "dist/mupdf-wasm.wasm", "LICENSE"]
 };
 for (const [name, files] of Object.entries(assets)) {
   const directory = path.join(destination, name.split("/").pop());

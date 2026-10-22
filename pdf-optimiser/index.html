@@ -24,6 +24,7 @@
         <nav class="tool-modes" aria-label="PDF tool">
             <button id="compress-mode" type="button" aria-pressed="true"><i data-lucide="minimize-2"></i> Compress</button>
             <button id="organise-mode" type="button" aria-pressed="false"><i data-lucide="files"></i> Organise, merge &amp; split</button>
+            <button id="text-mode" type="button" aria-pressed="false"><i data-lucide="text-cursor-input"></i> Correct text</button>
         </nav>
         <div id="compression-view">
         <input type="file" id="file-input" accept="application/pdf,.pdf" hidden>
@@ -73,6 +74,7 @@
                         <div class="filename-input"><input id="pages-name" type="text" maxlength="100" value="document-assembled"><span>.pdf</span></div>
                         <button id="pages-download" class="primary full-width"><i data-lucide="download"></i> Download PDF</button>
                         <button id="pages-compress" class="secondary full-width"><i data-lucide="minimize-2"></i> Open in optimiser</button>
+                        <button id="pages-text" class="secondary full-width"><i data-lucide="text-cursor-input"></i> Correct text</button>
                         <button id="pages-extract" class="secondary full-width"><i data-lucide="file-output"></i> Extract selected</button>
                         <div class="split-section">
                             <h2>Split by page range</h2>
@@ -139,6 +141,53 @@
                 </div>
                 <p class="document-note">Compression can change image quality and remove comments or accessibility tags. Review the optimised pages before using the PDF.</p>
             </aside>
+        </section>
+        <section id="text-tools" hidden aria-label="Text corrections">
+            <input id="text-input" type="file" accept="application/pdf,.pdf" hidden>
+            <section id="text-upload" class="upload-surface" aria-label="Choose PDF for text corrections">
+                <div class="upload-icon"><i data-lucide="text-cursor-input"></i></div>
+                <h2>Choose a PDF</h2><p>Up to 50 MB / 200 pages</p>
+                <button id="text-choose" class="primary"><i data-lucide="plus"></i> Choose PDF</button>
+                <button id="text-load-cancel" class="secondary" hidden><i data-lucide="x"></i> Cancel</button>
+                <p class="upload-note">or drop a file here</p>
+            </section>
+            <div id="text-workspace" hidden>
+                <div class="pages-file-bar"><div class="pages-summary"><strong id="text-filename"></strong><span id="text-summary"></span></div><button id="text-replace" class="secondary"><i data-lucide="folder-open"></i> Replace</button></div>
+                <div class="text-layout">
+                    <div class="text-main">
+                        <div class="text-toolbar">
+                            <fieldset class="text-selection-mode"><legend class="sr-only">Selection</legend><label><input type="radio" name="text-selection-mode" value="word" checked><span>Word</span></label><label><input type="radio" name="text-selection-mode" value="line"><span>Line</span></label></fieldset>
+                            <label class="text-original"><input id="text-original" type="checkbox"> Original</label>
+                            <label class="sr-only" for="text-zoom">Preview zoom</label><select id="text-zoom" aria-label="Preview zoom"><option value="fit">Fit width</option><option value="1">100%</option><option value="1.5">150%</option></select>
+                            <div class="page-controls"><button id="text-previous" class="icon-button" title="Previous page" aria-label="Previous page"><i data-lucide="chevron-left"></i></button><span id="text-page-count">1 / 1</span><button id="text-next" class="icon-button" title="Next page" aria-label="Next page"><i data-lucide="chevron-right"></i></button></div>
+                        </div>
+                        <div id="text-stage" class="text-stage" aria-busy="false"><div id="text-paper" class="text-paper" hidden><canvas id="text-canvas" aria-label="PDF text correction preview"></canvas><div id="text-hits" class="text-hits" aria-label="Selectable text"></div></div><p id="text-render-status" role="status">Preparing preview...</p></div>
+                        <p id="text-page-status" class="text-page-status" role="status"></p>
+                    </div>
+                    <aside class="text-settings" aria-label="Text correction settings">
+                        <h2>Text correction</h2>
+                        <label for="text-target">Selected text</label><select id="text-target"><option value="">Select a word on the page</option></select>
+                        <p id="text-source-font" class="text-note"></p>
+                        <fieldset id="text-fields" disabled>
+                            <legend class="sr-only">Replacement settings</legend>
+                            <label for="text-replacement">Replacement</label><textarea id="text-replacement" rows="2" maxlength="500" spellcheck="true"></textarea>
+                            <div class="text-font-row"><div><label for="text-font">Font</label><select id="text-font"><option value="auto">Match standard font</option><option value="Helvetica">Helvetica</option><option value="Times-Roman">Times Roman</option><option value="Courier">Courier</option></select></div><div><label for="text-size">Size (pt)</label><input id="text-size" type="number" min="1" max="144" step="0.5" value="12"></div></div>
+                            <p id="text-fit" class="text-fit" role="status" aria-live="polite"></p>
+                            <label id="text-fallback-label" class="text-fallback" hidden><input id="text-fallback" type="checkbox"><span id="text-fallback-description"></span></label>
+                        </fieldset>
+                        <button id="text-apply" class="primary full-width" disabled><i data-lucide="check"></i> Apply correction</button>
+                        <div class="text-history"><button id="text-undo" class="icon-button" title="Undo correction" aria-label="Undo correction" disabled><i data-lucide="undo-2"></i></button><button id="text-redo" class="icon-button" title="Redo correction" aria-label="Redo correction" disabled><i data-lucide="redo-2"></i></button><span id="text-change-count" role="status">0 corrections</span></div>
+                        <div class="split-section">
+                            <label for="text-name">File name</label><div class="filename-input"><input id="text-name" type="text" maxlength="100"><span>.pdf</span></div>
+                            <button id="text-download" class="primary full-width" disabled><i data-lucide="download"></i> Download corrected PDF</button>
+                            <button id="text-to-pages" class="secondary full-width" disabled><i data-lucide="files"></i> Open in organiser</button>
+                            <button id="text-to-compress" class="secondary full-width" disabled><i data-lucide="minimize-2"></i> Open in optimiser</button>
+                        </div>
+                        <div id="text-progress" class="processing" hidden><progress aria-label="PDF text processing"></progress><p role="status">Checking PDF text...</p><button id="text-cancel" class="secondary full-width"><i data-lucide="x"></i> Cancel</button></div>
+                        <p class="document-note">Corrections replace underlying page text. Font substitutions and character spacing can change appearance. Review the preview before downloading. Scans, rotated text and text over images are not supported.</p>
+                    </aside>
+                </div>
+            </div>
         </section>
         <footer class="tool-footer"><span>Thinking Systems Playground</span><span>Private, local PDF processing</span></footer>
     </main>

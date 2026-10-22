@@ -1,5 +1,6 @@
 import * as pdfjs from "./vendor/pdfjs-dist/pdf.min.mjs";
 import { createOrganiser } from './organiser.js';
+import { createTextEditor } from './text-editor.js';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL("./vendor/pdfjs-dist/pdf.worker.min.mjs", import.meta.url).href;
 const $ = (id) => document.getElementById(id);
@@ -8,21 +9,33 @@ let sourceFile, sourceBytes, sourceDocument, outputDocument, outputBytes, output
 let page = 1, version = "original", busy = false, activeWorker, workerReject, workerTimer;
 let renderTask, renderGeneration = 0, loadGeneration = 0;
 let currentMode = 'compress';
-const organiser = createOrganiser({ openDocument, message, onOptimise: async (file) => {
+const organiser = createOrganiser({ openDocument, message, onCorrect: async (file) => {
+  if (await textEditor.loadFile(file)) await setMode('text', true);
+}, onOptimise: async (file) => {
   if (await loadFile(file)) await setMode('compress', true);
+} });
+const textEditor = createTextEditor({ openDocument, message, onSend: async (file, mode) => {
+  if (mode === 'compress') { if (await loadFile(file)) await setMode('compress', true); }
+  else { await organiser.loadFiles([file], true); await setMode('organise', true); }
 } });
 
 async function setMode(mode, force = false) {
-  if (!force && (busy || organiser.isBusy())) return;
+  if (!force && (busy || organiser.isBusy() || textEditor.isBusy())) return;
   currentMode = mode;
   const compress = mode === 'compress';
   $('compress-mode').setAttribute('aria-pressed', String(compress));
-  $('organise-mode').setAttribute('aria-pressed', String(!compress));
+  $('organise-mode').setAttribute('aria-pressed', String(mode === 'organise'));
+  $('text-mode').setAttribute('aria-pressed', String(mode === 'text'));
   $('compression-view').hidden = !compress;
   $('editor').hidden = !compress || !sourceBytes;
-  $('page-tools').hidden = compress;
+  $('page-tools').hidden = mode !== 'organise';
+  $('text-tools').hidden = mode !== 'text';
   message('');
-  if (!compress && !organiser.hasDocuments() && sourceFile) await organiser.loadFiles([sourceFile], true);
+  if (mode === 'organise' && !organiser.hasDocuments() && sourceFile) await organiser.loadFiles([sourceFile], true);
+  if (mode === 'text') {
+    if (!textEditor.hasDocument() && sourceFile) await textEditor.loadFile(sourceFile);
+    else textEditor.show();
+  }
   if (compress && sourceBytes) renderPreview();
 }
 
@@ -65,6 +78,7 @@ function setBusy(value, loading = false) {
   busy = value;
   $('compress-mode').disabled = value || organiser.isBusy();
   $('organise-mode').disabled = value || organiser.isBusy();
+  $('text-mode').disabled = value || organiser.isBusy();
   $("choose").disabled = value;
   $("replace").disabled = value;
   $("settings").disabled = value;
@@ -218,6 +232,7 @@ async function optimise() {
 $("choose").addEventListener("click", () => $("file-input").click());
 $('compress-mode').addEventListener('click', () => setMode('compress'));
 $('organise-mode').addEventListener('click', () => setMode('organise'));
+$('text-mode').addEventListener('click', () => setMode('text'));
 $("replace").addEventListener("click", () => $("file-input").click());
 $("file-input").addEventListener("change", (event) => loadFile(event.target.files[0]));
 $("optimise").addEventListener("click", optimise);
@@ -244,7 +259,11 @@ document.addEventListener("dragleave", (event) => { if (!event.relatedTarget) $(
 document.addEventListener("drop", (event) => {
   event.preventDefault();
   $("upload").classList.remove("dragging");
-  if (busy || organiser.isBusy() || !event.dataTransfer.files.length) return;
+  if (busy || organiser.isBusy() || textEditor.isBusy() || !event.dataTransfer.files.length) return;
+  if (currentMode === 'text') {
+    if (event.dataTransfer.files.length !== 1) { message('Choose one PDF for text correction.', true); return; }
+    textEditor.loadFile(event.dataTransfer.files[0]); return;
+  }
   if (currentMode === 'organise') { organiser.loadFiles(event.dataTransfer.files, !organiser.hasDocuments()); return; }
   if (event.dataTransfer.files.length !== 1) { message("Choose one PDF at a time.", true); return; }
   loadFile(event.dataTransfer.files[0]);
